@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:muzzone/logic/blocs/audio/audio_event.dart';
 import 'package:muzzone/ui/widgets/layout_widgets/audio_row.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../../../config/routes/arguments/album_page_arguments.dart';
-import '../../../controllers/controllers.dart';
 import '../../../widgets/layout_widgets/playlist_row.dart';
-import '../../player_page/bloc/audio_bloc.dart';
+import '../../../../logic/blocs/audio/audio_bloc.dart';
 import '../../search/widgets/search_chosen_genre_page/search_chosen_genre_page.dart';
 
 class PageViewArtistPage extends StatelessWidget {
@@ -45,7 +45,7 @@ class PageViewArtistPage extends StatelessWidget {
 }
 
 class ColumnMusicAndAlbumsArtistPage extends StatelessWidget {
-  ColumnMusicAndAlbumsArtistPage({
+  const ColumnMusicAndAlbumsArtistPage({
     Key? key,
     required this.args,
     required this.index,
@@ -56,8 +56,6 @@ class ColumnMusicAndAlbumsArtistPage extends StatelessWidget {
   final int index;
   final bool isPopularSongs;
 
-  final MainController con = GetIt.I.get<MainController>();
-  final audioBloc = GetIt.I.get<AudioBloc>();
 
   @override
   Widget build(BuildContext context) {
@@ -70,10 +68,9 @@ class ColumnMusicAndAlbumsArtistPage extends StatelessWidget {
               paddingLeft: 2.w,
               audio: args[i],
               onPress: () {
-                con.playSong(con.audios, index);
-                audioBloc.add(StartPlaying(con.audios));
+                BlocProvider.of<AudioBloc>(context).add(OpenMiniPlayer());
+                BlocProvider.of<AudioBloc>(context).add(Play(audioPath: args[i].path));
               },
-              height: 7.h,
             )
           else
             PlaylistRow(

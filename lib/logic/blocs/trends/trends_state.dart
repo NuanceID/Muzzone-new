@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:muzzone/data/models/backend_playlist.dart';
-import 'package:muzzone/data/models/playlist.dart';
 
 enum TrendsStatus { initial, success, failure, loading }
 

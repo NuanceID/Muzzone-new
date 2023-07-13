@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:muzzone/config/config.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../../../logic/functions/duration_to_string.dart';
-import '../bloc/audio_bloc.dart';
 
 class PlayerPositionSeekWidget extends StatefulWidget {
   final Duration currentPosition;
@@ -26,11 +25,10 @@ class PlayerPositionSeekWidget extends StatefulWidget {
 class _PlayerPositionSeekWidgetState extends State<PlayerPositionSeekWidget> {
   late Duration _visibleValue;
   bool listenOnlyUserInteraction = false;
+
   double get percent => widget.duration.inMilliseconds == 0
       ? 0
       : _visibleValue.inMilliseconds / widget.duration.inMilliseconds;
-
-  final audioBloc = GetIt.I.get<AudioBloc>();
 
   @override
   void initState() {
@@ -48,77 +46,92 @@ class _PlayerPositionSeekWidgetState extends State<PlayerPositionSeekWidget> {
 
   @override
   Widget build(BuildContext context) {
+
     return SizedBox(
-      height: 10.h,
+      height: availableHeight / 9,
       width: double.infinity,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Row(
             children: [
-              Expanded(
+              const Flexible(fit: FlexFit.tight, child: SizedBox.shrink()),
+              Flexible(
+                flex: 12,
+                fit: FlexFit.tight,
                 child: SliderTheme(
-                  data: const SliderThemeData(
-                    trackHeight: 4,
+                  data: SliderThemeData(
+                    trackHeight: availableHeight / 196,
                     thumbShape: RoundSliderThumbShape(
-                      enabledThumbRadius: 6,
+                      enabledThumbRadius: 8.r,
                     ),
                   ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.w),
-                    child: Slider(
-                      min: 0,
-                      inactiveColor: AppColors.greyColor.withOpacity(0.5),
-                      activeColor: AppColors.primaryColor,
-                      max: widget.duration.inMilliseconds.toDouble(),
-                      value:
-                          percent * widget.duration.inMilliseconds.toDouble(),
-                      onChangeEnd: (newValue) async {
-                        // audioBloc.add(AllowDrag());
-                        setState(() {
-                          listenOnlyUserInteraction = false;
-                          widget.seekTo(_visibleValue);
-                        });
-                      },
-                      onChangeStart: (_) async {
-                        // audioBloc.add(BanDrag());
-                        setState(() {
-                          listenOnlyUserInteraction = true;
-                        });
-                      },
-                      onChanged: (newValue) async {
-                        // audioBloc.add(BanDrag());
-                        setState(() {
-                          final to = Duration(milliseconds: newValue.floor());
-                          _visibleValue = to;
-                        });
-                      },
-                    ),
+                  child: Slider(
+                    min: 0,
+                    inactiveColor: AppColors.greyColor.withOpacity(0.5),
+                    activeColor: AppColors.primaryColor,
+                    max: widget.duration.inMilliseconds.toDouble(),
+                    value: percent * widget.duration.inMilliseconds.toDouble(),
+                    onChangeEnd: (newValue) async {
+                      setState(() {
+                        listenOnlyUserInteraction = false;
+                        widget.seekTo(_visibleValue);
+                      });
+                    },
+                    onChangeStart: (_) async {
+                      setState(() {
+                        listenOnlyUserInteraction = true;
+                      });
+                    },
+                    onChanged: (newValue) async {
+                      setState(() {
+                        final to = Duration(milliseconds: newValue.floor());
+                        _visibleValue = to;
+                      });
+                    },
                   ),
                 ),
               ),
+              const Flexible(fit: FlexFit.tight, child: SizedBox.shrink()),
             ],
           ),
           SizedBox(
-            height: 2.5.h,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(durationToString(widget.currentPosition),
-                      style: TextStyle(
-                          color: AppColors.primaryColor, fontSize: 2.h)),
-                  Text(
-                    durationToString(widget.duration),
-                    style: TextStyle(
-                        fontWeight: FontWeight.normal,
-                        color: AppColors.primaryColor,
-                        fontSize: 2.h),
-                  ),
-                ],
-              ),
-            ),
+            height: availableHeight / 30,
+            child: Align(
+                alignment: Alignment.topCenter,
+                child: Row(
+                  children: [
+                    const Flexible(
+                        fit: FlexFit.tight, child: SizedBox.shrink()),
+                    Flexible(
+                        flex: 8,
+                        fit: FlexFit.tight,
+                        child: Text(
+                          durationToString(widget.currentPosition),
+                          style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14.sp,
+                              color: AppColors.primaryColor),
+                          textAlign: TextAlign.center,
+                        )),
+                    const Flexible(
+                        flex: 12, fit: FlexFit.tight, child: SizedBox.shrink()),
+                    Flexible(
+                        flex: 8,
+                        fit: FlexFit.tight,
+                        child: Text(
+                          durationToString(widget.duration),
+                          style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14.sp,
+                              color: AppColors.primaryColor),
+                          textAlign: TextAlign.center,
+                        )),
+                    const Flexible(
+                        fit: FlexFit.tight, child: SizedBox.shrink()),
+                  ],
+                )),
           ),
         ],
       ),

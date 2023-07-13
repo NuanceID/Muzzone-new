@@ -4,41 +4,42 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:muzzone/config/config.dart';
-import 'package:sizer/sizer.dart';
+import 'package:muzzone/logic/blocs/audio/audio_state.dart';
 
 import '../../../generated/locale_keys.g.dart';
-import '../../pages/player_page/bloc/audio_bloc.dart';
+import '../../../logic/blocs/audio/audio_bloc.dart';
 import '../../pages/profile/setting_profile/edit_profile_page/widgets/edition_zone/edit_photo/bloc/edit_photo_bloc.dart';
 
 class ImageWidget extends StatelessWidget {
-  ImageWidget(
+  const ImageWidget(
       {Key? key,
       required this.needFunction,
       required this.icon,
       this.needBorder = false})
       : super(key: key);
 
-  final editPhotoBloc = GetIt.I.get<EditPhotoBloc>();
   final bool needFunction;
   final IconData icon;
   final bool? needBorder;
 
   @override
   Widget build(BuildContext context) {
+    final editPhotoBloc = context.read<EditPhotoBloc>();
+
     return Center(
       child: BlocBuilder<EditPhotoBloc, EditPhotoState>(
         builder: (context, state) {
           return Stack(
             children: [
               state.image != null
-                  ? buildImage(context)
+                  ? buildImage(context, editPhotoBloc)
                   : GestureDetector(
                       onTap: () async {
                         if (needFunction) {
-                          final source = await showImageSource(context);
+                          final source = await showImageSource(context, editPhotoBloc);
                           if (source == null) return;
                           editPhotoBloc.add(FinalPickImage(source));
                           return Future.value();
@@ -72,7 +73,7 @@ class ImageWidget extends StatelessWidget {
     );
   }
 
-  Widget buildImage(BuildContext context) {
+  Widget buildImage(BuildContext context, EditPhotoBloc editPhotoBloc) {
     final imagePath = editPhotoBloc.state.image!.path;
     final photo = imagePath.contains('https://')
         ? NetworkImage(imagePath)
@@ -99,7 +100,7 @@ class ImageWidget extends StatelessWidget {
               child: InkWell(
                 onTap: () async {
                   if (needFunction) {
-                    final source = await showImageSource(context);
+                    final source = await showImageSource(context, editPhotoBloc);
                     if (source == null) return;
                     (source) => editPhotoBloc.add(FinalPickImage(source));
                   }
@@ -110,7 +111,7 @@ class ImageWidget extends StatelessWidget {
     );
   }
 
-  Future<ImageSource?> showImageSource(BuildContext context) async {
+  Future<ImageSource?> showImageSource(BuildContext context, EditPhotoBloc editPhotoBloc) async {
     if (Platform.isIOS) {
       return showCupertinoModalPopup<ImageSource>(
           context: context,

@@ -1,8 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:muzzone/ui/pages/on_board/widgets/row_language.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../../../generated/locale_keys.g.dart';
 import '../../../../logic/cubits/theme_cubit.dart';

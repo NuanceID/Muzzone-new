@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:muzzone/config/config.dart';
-import 'package:sizer/sizer.dart';
 
 class FirstOnboard extends StatelessWidget {
   const FirstOnboard({Key? key}) : super(key: key);

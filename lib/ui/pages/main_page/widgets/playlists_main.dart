@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:muzzone/config/constants/constants.dart';
 import 'package:muzzone/ui/widgets/widgets.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../../../config/routes/arguments/show_all_arguments.dart';
 import '../../show_all_page/show_all_page.dart';
@@ -15,24 +15,31 @@ class PlaylistsMainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        TitleWithButtonShowAll(
-          fromPage: 'main_page',
-          title: title,
-          item: list,
-          onPress: () {
-            Navigator.of(context).pushNamed(ShowAllPage.id,
-                arguments: ShowAllPageArguments(
-                    item: list, title: title, fromPage: 'main_page'));
-          },
+        Flexible(
+          child: TitleWithButtonShowAll(
+            fromPage: 'main_page',
+            title: title,
+            item: list,
+            onPress: () {
+              Navigator.of(context).pushNamed(ShowAllPage.id,
+                  arguments: ShowAllPageArguments(
+                      item: list, title: title, fromPage: 'main_page'));
+            },
+          ),
         ),
-        SizedBox(
-          height: 2.h,
+        Flexible(
+          child: SizedBox(
+            height: availableHeight / 40,
+          ),
         ),
-        PlaylistsRow(
-          playlists: list,
-          //fromPage: 'main_page',
-          fromPage: 'playlists_row',
+        Flexible(
+          child: PlaylistsRow(
+            playlists: list,
+            //fromPage: 'main_page',
+            fromPage: 'playlists_row',
+          ),
         ),
       ],
     );

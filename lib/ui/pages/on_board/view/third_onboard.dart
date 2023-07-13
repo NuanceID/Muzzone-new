@@ -1,8 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
-import 'package:sizer/sizer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../config/style/style.dart';
 import '../../../../config/theme/theme.dart';
@@ -16,12 +15,12 @@ class ThirdOnBoard extends StatelessWidget {
 
   final VoidCallback onPress;
 
-  final themeCubit = GetIt.I.get<ThemeCubit>();
-
   final LocalDataStore _store = LocalDataStore();
 
   @override
   Widget build(BuildContext context) {
+    final themeCubit = context.read<ThemeCubit>();
+
     return Column(
       children: [
         HeaderTitle(

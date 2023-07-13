@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../../../../../../../data/local_data_store/local_data_store.dart';
@@ -45,11 +44,11 @@ class EditPhotoBloc extends Bloc<EditPhotoEvent, EditPhotoState> {
   FutureOr<void> _onSaveImagePermanently(
       SaveImagePermanently event, Emitter<EditPhotoState> emit) async {
     final directory = await getApplicationDocumentsDirectory();
-    final name = basename(event.imagePath);
-    final image = File('${directory.path}/$name');
+    //final name = basename(event.imagePath);
+    //final image = File('${directory.path}/$name');
 
     // _store.setAvatarImagePath(image.path);
-    emit(state.copyWith(image: await File(event.imagePath).copy(image.path)));
+    //emit(state.copyWith(image: await File(event.imagePath).copy(image.path)));
   }
 
   FutureOr<void> _onFinalPickImage(

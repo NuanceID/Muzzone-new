@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sizer/sizer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppFontFamily {
   static String alumna = 'Alumna';
@@ -56,11 +56,11 @@ class AppGradient {
 }
 
 class Space {
-  static double bottomBarHeight = 8.1.h;
+  static double bottomBarHeight = 18.1.h;
 }
 
 class MyPadding {
-  static double horizontalPadding = 7.w;
+  static double horizontalPadding = 17.w;
 }
 
 class StatusBarStyle {

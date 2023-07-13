@@ -1,99 +1,93 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get_it/get_it.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:muzzone/data/models/user.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../../../config/config.dart';
 import '../../../../generated/locale_keys.g.dart';
-import '../../../../logic/blocs/bottom_bar/bottom_bar_bloc.dart';
 import '../../profile/bloc/profile_bloc.dart';
 import '../../profile/setting_profile/view/setting_profile_page.dart';
 
 class MainHeaderTitle extends StatelessWidget {
-  MainHeaderTitle({Key? key}) : super(key: key);
-
-  final profileBloc = GetIt.I.get<ProfileBloc>();
-  final bottomBarBloc = GetIt.I.get<BottomBarBloc>();
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: MyPadding.horizontalPadding,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: const [
-          MainHeaderTitleText(),
-          MainHeaderTitleIcon(),
-        ],
-      ),
-    );
-  }
-}
-
-class MainHeaderTitleText extends StatelessWidget {
-  const MainHeaderTitleText({
-    super.key,
-  });
+  const MainHeaderTitle({super.key});
 
   @override
   Widget build(BuildContext context) {
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          LocaleKeys.main_page_hello.tr(),
-          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                fontSize: 2.h,
-              ),
-        ),
-        SizedBox(
-          height: 0.8.h,
-        ),
-        BlocBuilder<ProfileBloc, ProfileState>(
-          builder: (context, state) {
-            return Text(
-              state.name,
+        Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+          const Flexible(
+            fit: FlexFit.tight,
+            child: SizedBox.shrink(),
+          ),
+          Flexible(
+            flex: 14,
+            fit: FlexFit.tight,
+            child: AutoSizeText(
+              LocaleKeys.main_page_hello.tr(),
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    fontSize: 17.5.sp,
+                    fontSize: 18.sp,
                   ),
-            );
-          },
+            ),
+          ),
+          const Flexible(
+            fit: FlexFit.tight,
+            child: SizedBox.shrink(),
+          ),
+        ]),
+        SizedBox(
+          height: availableHeight/60,
+        ),
+        Row(
+          children: [
+            const Flexible(
+              fit: FlexFit.tight,
+              child: SizedBox.shrink(),
+            ),
+            Flexible(
+              flex: 7,
+              fit: FlexFit.tight,
+              child: BlocBuilder<ProfileBloc, ProfileState>(
+                builder: (context, state) {
+                  return AutoSizeText(
+                    state.name,
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontSize: 22.sp,
+                        ),
+                  );
+                },
+              ),
+            ),
+            const Flexible(
+              fit: FlexFit.tight,
+              child: SizedBox.shrink(),
+            ),
+            Flexible(
+                flex: 6,
+                fit: FlexFit.tight,
+                child: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, SettingProfilePage.id);
+              },
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: SvgPicture.asset(
+                  '${iconsPath}edit.svg',
+                  color: Theme.of(context).splashColor,
+                  fit: BoxFit.none,
+                ),
+              ),
+            )),
+            const Flexible(
+              fit: FlexFit.tight,
+              child: SizedBox.shrink(),
+            ),
+          ],
         ),
       ],
-    );
-  }
-}
-
-class MainHeaderTitleIcon extends StatelessWidget {
-  const MainHeaderTitleIcon({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, SettingProfilePage.id);
-      },
-      child: Container(
-        height: 40.sp,
-        width: 40.sp,
-        color: Colors.redAccent.withOpacity(0),
-        child: Align(
-          alignment: Alignment.centerRight,
-          child: SvgPicture.asset(
-            '${iconsPath}edit.svg',
-            color: Theme.of(context).splashColor,
-            fit: BoxFit.none,
-          ),
-        ),
-      ),
     );
   }
 }

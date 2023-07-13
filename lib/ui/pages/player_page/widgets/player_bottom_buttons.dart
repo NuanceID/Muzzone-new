@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:muzzone/config/config.dart';
-import 'package:sizer/sizer.dart';
+import 'package:muzzone/logic/blocs/audio/audio_state.dart';
 
-import '../bloc/audio_bloc.dart';
+import '../../../../logic/blocs/audio/audio_bloc.dart';
 
 class PlayerBottomButtons extends StatelessWidget {
   const PlayerBottomButtons({
@@ -22,58 +23,48 @@ class PlayerBottomButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: Space.bottomBarHeight,
-      width: 100.w,
-      // decoration: BoxDecoration(
-      //   color: Theme.of(context).scaffoldBackgroundColor,
-      //   borderRadius: const BorderRadius.only(
-      //     topLeft: Radius.circular(
-      //       20,
-      //     ),
-      //     topRight: Radius.circular(
-      //       20,
-      //     ),
-      //   ),
-      //   boxShadow: [
-      //     BoxShadow(
-      //       color: Colors.grey.withOpacity(0.5),
-      //       spreadRadius: 0,
-      //       blurRadius: 3,
-      //       offset: const Offset(0, 0), // changes position of shadow
-      //     ),
-      //   ],
-      // ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 14.w),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            BlocBuilder<AudioBloc, AudioState>(
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(15.r),
+            topLeft: Radius.circular(15.r),
+          ),
+          boxShadow: [
+            BoxShadow(
+                offset: const Offset(0, 0),
+                spreadRadius: 0,
+                blurRadius: 2.r,
+                color: Colors.grey.shade400)
+          ]),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const Flexible(fit: FlexFit.tight, child: SizedBox.shrink()),
+          Flexible(
+            flex: 5,
+            fit: FlexFit.tight,
+            child: BlocBuilder<AudioBloc, AudioState>(
               builder: (context, state) {
                 return PlayerBottomButton(
-                  index: 0,
-                  icon: state.isFavourite ? 'like_full' : 'like',
-                  color: state.isFavourite ? AppColors.primaryColor : null,
+                  icon: /*state.isFavourite ? 'like_full' : */'like',
+                  color: /*state.isFavourite ? AppColors.primaryColor : */null,
                   onPress: like,
                 );
               },
             ),
-            PlayerBottomButton(
-              index: 1,
+          ),
+          const Flexible(fit: FlexFit.tight, child: SizedBox.shrink()),
+          Flexible(
+            flex: 5,
+            fit: FlexFit.tight,
+            child: PlayerBottomButton(
               icon: 'share',
               onPress: share,
             ),
-            // PlayerBottomButton(
-            //   icon: 'like_add',
-            //   onPress: likeAdd,
-            // ),
-            // PlayerBottomButton(
-            //   icon: 'search',
-            //   onPress: search,
-            // ),
-          ],
-        ),
+          ),
+          const Flexible(flex: 30, fit: FlexFit.tight, child: SizedBox.shrink()),
+        ],
       ),
     );
   }
@@ -84,40 +75,31 @@ class PlayerBottomButton extends StatelessWidget {
     required this.icon,
     required this.onPress,
     this.color,
-    required this.index,
     super.key,
   });
 
   final String icon;
   final VoidCallback onPress;
   final Color? color;
-  final int index;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 10.h,
-      height: 7.h,
-      color: Colors.red.withOpacity(0),
+
+    return Material(
+      shape: const CircleBorder(),
+      color: Colors.transparent,
+      clipBehavior: Clip.hardEdge,
       child: InkWell(
         onTap: onPress,
-        child: Container(
-          width: 3.5.h,
-          height: 3.5.h,
-          margin: EdgeInsets.only(
-              right: index == 1 ? 2.w : 0, left: index == 0 ? 2.w : 0),
-          child: Align(
-            alignment:
-                index == 0 ? Alignment.centerLeft : Alignment.centerRight,
+        child: Ink(
+            padding: EdgeInsets.all(availableHeight / 60),
             child: SvgPicture.asset(
               '$iconsPath$icon.svg',
-              width: 3.5.h,
-              height: 3.5.h,
-              fit: BoxFit.none,
+              width: availableHeight / 35,
+              height: availableHeight / 35,
+              fit: BoxFit.contain,
               color: color ?? Theme.of(context).cardColor,
-            ),
-          ),
-        ),
+            )),
       ),
     );
   }

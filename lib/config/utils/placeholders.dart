@@ -1,70 +1,103 @@
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:muzzone/config/constants/constants.dart';
 
 class TrendsPlaceholder extends StatelessWidget {
   const TrendsPlaceholder({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 5.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Row(
+      children: [
+        Flexible(
+          child: Container(),
+        ),
+        Flexible(
+          flex: 14,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.white),
-                width: 30.w,
-                height: 4.h,
+              Flexible(
+                  child: Row(
+                children: [
+                  Flexible(
+                    child: Container(
+                      height: (availableHeight / 2.42) / 10,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.r),
+                          color: Colors.white),
+                    ),
+                  ),
+                  Flexible(
+                    child: Container(),
+                  ),
+                  Flexible(
+                    child: Container(
+                      height: (availableHeight / 2.42) / 10,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.r),
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              )),
+              Flexible(
+                child: Container(
+                  height: (availableHeight / 2.42) / 18.9,
+                ),
               ),
-              Container(
+              Flexible(
+                  child: Container(
+                height: availableHeight / 13,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(10.r),
                     color: Colors.white),
-                width: 30.w,
-                height: 4.h,
+              )),
+              Flexible(
+                child: Container(
+                  height: (availableHeight / 2.42) / 30,
+                ),
               ),
+              Flexible(
+                  child: Container(
+                height: availableHeight / 13,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.r),
+                    color: Colors.white),
+              )),
+              Flexible(
+                child: Container(
+                  height: (availableHeight / 2.42) / 30,
+                ),
+              ),
+              Flexible(
+                  child: Container(
+                height: availableHeight / 13,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.r),
+                    color: Colors.white),
+              )),
+              Flexible(
+                child: Container(
+                  height: (availableHeight / 2.42) / 30,
+                ),
+              ),
+              Flexible(
+                  child: Container(
+                height: availableHeight / 13,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.r),
+                    color: Colors.white),
+              ))
             ],
           ),
-          SizedBox(height: 2.05.h),
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10), color: Colors.white),
-            padding: EdgeInsets.only(left: 7.w, right: 7.w, bottom: 2.h),
-            width: 100.w,
-            height: 8.h,
-          ),
-          SizedBox(height: 2.h),
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10), color: Colors.white),
-            padding: EdgeInsets.only(left: 7.w, right: 7.w, bottom: 2.h),
-            width: 100.w,
-            height: 8.h,
-          ),
-          SizedBox(height: 2.h),
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10), color: Colors.white),
-            padding: EdgeInsets.only(left: 7.w, right: 7.w, bottom: 2.h),
-            width: 100.w,
-            height: 8.h,
-          ),
-          SizedBox(height: 2.h),
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10), color: Colors.white),
-            padding: EdgeInsets.only(left: 7.w, right: 7.w, bottom: 2.h),
-            width: 100.w,
-            height: 8.h,
-          )
-        ],
-      ),
+        ),
+        Flexible(
+          child: Container(),
+        ),
+      ],
     );
   }
 }
@@ -74,51 +107,72 @@ class MainTilePlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 5.w),
-      child: Column(
-        children: [Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Row(children: [
+      Flexible(
+        child: Container(),
+      ),
+      Flexible(
+        flex: 14,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white),
-              width: 30.w,
-              height: 4.h,
+            Flexible(
+                child: Row(
+              children: [
+                Flexible(
+                  child: Container(
+                    height: availableHeight / 25,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.r),
+                        color: Colors.white),
+                  ),
+                ),
+                Flexible(
+                  child: Container(),
+                ),
+                Flexible(
+                  child: Container(
+                    height: availableHeight / 25,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.r),
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            )),
+            Flexible(
+              child: SizedBox(
+                height: availableHeight / 80,
+              ),
             ),
-            Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white),
-              width: 30.w,
-              height: 4.h,
-            ),
+            Flexible(
+                child: SizedBox(
+                    height: availableHeight / 4,
+                    child: ListView.builder(
+                      itemCount: 3,
+                      physics: const BouncingScrollPhysics(),
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          width: availableHeight / 4,
+                          height: availableHeight / 4,
+                          margin:
+                              EdgeInsets.only(right: index == 2 ? 14.w : 12.w),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.r)),
+                        );
+                      },
+                    )))
           ],
         ),
-          SizedBox(height: 2.05.h),
-          SizedBox(
-              height: 120.sp,
-              width: double.infinity,
-              child: ListView.builder(
-                itemCount: 3,
-                physics: const BouncingScrollPhysics(),
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) {
-                  return Container(
-                    width: 120.sp,
-                    height: 120.sp,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10)),
-                    margin: EdgeInsets.only(
-                        left: index == 0 ? 2.w : 0, right: index == 3 ? 7.w : 3.w),
-                  );
-                },
-              ))
-        ],
       ),
-    );
+      Flexible(
+        child: Container(),
+      ),
+    ]);
   }
 }

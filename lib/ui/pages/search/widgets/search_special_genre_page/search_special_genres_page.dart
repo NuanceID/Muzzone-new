@@ -1,18 +1,16 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get_it/get_it.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:muzzone/config/config.dart';
-import 'package:muzzone/data/data.dart';
+import 'package:muzzone/data/models/playlist.dart';
 import 'package:muzzone/data/repositories/remote_repositories/backend_repository.dart';
 import 'package:muzzone/logic/blocs/genres/genres_bloc.dart';
 import 'package:muzzone/logic/blocs/genres/genres_event.dart';
 import 'package:muzzone/logic/blocs/genres/genres_state.dart';
 import 'package:muzzone/ui/widgets/layout_widgets/header_title.dart';
-
-import 'package:sizer/sizer.dart';
 
 import '../../../../../generated/locale_keys.g.dart';
 import '../search_chosen_genre_page/search_chosen_genre_page.dart';
@@ -24,9 +22,9 @@ class SearchSpecialGenresPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Bloc bloc = GenresBloc(backendRepository: GetIt.I.get<BackendRepository>());
+    Bloc bloc = GenresBloc(backendRepository: context.read<BackendRepository>());
     PagingController<int, MyPlaylist> pagingController =
-        PagingController<int, MyPlaylist>(firstPageKey: 1);
+    PagingController<int, MyPlaylist>(firstPageKey: 1);
 
     return BlocProvider<GenresBloc>(
         create: (BuildContext context) => bloc,
@@ -88,8 +86,11 @@ class _SearchSpecialGenresPageState extends State<_SearchSpecialGenresPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 60.h,
+
+    return Container(
+      color: Colors.white,
+      height: availableHeight-120,
+      width: double.infinity,
       child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -103,7 +104,7 @@ class _SearchSpecialGenresPageState extends State<_SearchSpecialGenresPage> {
                 noItemsFoundIndicatorBuilder: (_) => Text(
                   LocaleKeys.no_content.tr(),
                   style: TextStyle(
-                    fontSize: 12.sp,
+                    fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primaryColor,
                   ),
@@ -111,7 +112,7 @@ class _SearchSpecialGenresPageState extends State<_SearchSpecialGenresPage> {
                 firstPageErrorIndicatorBuilder: (_) => Text(
                   LocaleKeys.something_went_wrong.tr(),
                   style: TextStyle(
-                    fontSize: 12.sp,
+                    fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primaryColor,
                   ),
@@ -119,7 +120,7 @@ class _SearchSpecialGenresPageState extends State<_SearchSpecialGenresPage> {
                 newPageErrorIndicatorBuilder: (_) => Text(
                   LocaleKeys.something_went_wrong.tr(),
                   style: TextStyle(
-                    fontSize: 12.sp,
+                    fontSize: 20.sp,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primaryColor,
                   ),
@@ -173,8 +174,8 @@ class SearchSpecialGenresListTile extends StatelessWidget {
         Navigator.of(context).pushNamed(
           SearchChosenGenrePage.id,
           arguments:
-              PageWithPlaylistArgument(playlist: genre //allGenres[index],
-                  ),
+          PageWithPlaylistArgument(playlist: genre //allGenres[index],
+          ),
         );
       },
       visualDensity: const VisualDensity(horizontal: 0, vertical: -2),

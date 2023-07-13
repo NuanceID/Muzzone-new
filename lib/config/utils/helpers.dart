@@ -1,8 +1,8 @@
 import 'dart:developer' as devtools show log;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../../config/utils/globals.dart';
 
@@ -17,7 +17,7 @@ void showSnackBar(
     );
 }
 
-void showFlutterToast(Color backgroundColor, Color textColor, String text) {
+Future<void> showFlutterToast(Color backgroundColor, Color textColor, String text) async {
   Fluttertoast.showToast(
     msg: text,
     toastLength: Toast.LENGTH_LONG,
@@ -25,7 +25,7 @@ void showFlutterToast(Color backgroundColor, Color textColor, String text) {
     timeInSecForIosWeb: 3,
     backgroundColor: backgroundColor,
     textColor: textColor,
-    fontSize: 2.h,
+    fontSize: 12.h,
   );
 }
 

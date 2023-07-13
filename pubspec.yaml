@@ -17,8 +17,6 @@ dependencies:
   json_serializable: ^6.5.4
   http: ^0.13.6
   json_annotation: ^4.8.1
-  get_it: ^7.6.0
-  sizer: ^2.0.15
   simple_gradient_text: ^1.2.4
   flutter_svg: ^1.1.6
   hydrated_bloc: ^9.1.1
@@ -34,13 +32,11 @@ dependencies:
   firebase_core: ^2.13.0
   firebase_messaging: ^14.6.1
   firebase_phone_auth_handler: ^1.0.8
-  flutter_keyboard_visibility: ^5.4.3
   firebase_auth: ^4.6.1
   pinput: ^2.2.31
   easy_container: ^1.0.4+1
   intl_phone_field: ^3.1.0
   phone_number: ^1.0.0
-  assets_audio_player: ^3.0.6
   hive: ^2.2.3
   line_icons: ^2.0.1
   hive_flutter: ^1.1.0
@@ -56,6 +52,13 @@ dependencies:
   dartx: ^1.1.0
   infinite_scroll_pagination: ^3.2.0
   collection: ^1.17.0
+  flutter_screenutil: ^5.7.0
+  auto_size_text: ^3.0.0
+  google_fonts: ^4.0.4
+  just_audio: ^0.9.34
+  audio_service: ^0.18.10
+  rxdart: 0.27.7
+  audio_session: ^0.1.16
 
 dev_dependencies:
   flutter_test:

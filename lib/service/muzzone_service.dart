@@ -1,7 +1,3 @@
-// To parse this JSON data, do
-//
-//     final track = trackFromJson(jsonString);
-
 import 'dart:convert';
 
 Track trackFromJson(String str) => Track.fromJson(json.decode(str));
@@ -98,35 +94,3 @@ class Album {
             : List<dynamic>.from(tracklist.map((x) => x)),
       };
 }
-
-var ttt = {
-  "id": 0,
-  "type": "track",
-  "name": "Znaesh li ti",
-  "image": "maksim_znaesh_li_ty_image",
-  "link": "https//",
-  "trackPopular": false,
-  "trackNew": true,
-  "artist": {
-    "id": 10,
-    "type": "artist",
-    "name": "Maksim",
-    "image": "https.image",
-    "tracklist": [234, 1, 23]
-  },
-  "album": {
-    "id": 20,
-    "type": "album",
-    "name": "name",
-    "image": "image",
-    "tracklist": [22, 55, 34]
-  },
-  "playlists": [
-    {"id": 30, "type": "playlist", "name": "best russia", "image": "http//"},
-    {}
-  ],
-  "genres": [
-    {"id": 40, "type": "genre", "image": "https//image", "name": "rus"},
-    {}
-  ]
-};

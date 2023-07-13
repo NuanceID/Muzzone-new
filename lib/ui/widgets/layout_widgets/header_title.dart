@@ -1,9 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:muzzone/config/constants/constants.dart';
 import 'package:muzzone/config/path/path.dart';
-import 'package:sizer/sizer.dart';
 
 class HeaderTitle extends StatelessWidget {
   const HeaderTitle({
@@ -24,88 +26,63 @@ class HeaderTitle extends StatelessWidget {
   final VoidCallback? iconPress;
   final double? paddingTop;
   final Color? iconColor;
-  final bool? needIconBack;
+  final bool needIconBack;
   final bool? needRotate;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 10.h,
-      padding: EdgeInsets.only(top: paddingTop ?? 5.h, right: 5.w, left: 5.w),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          GestureDetector(
-            onTap: onPress ??
-                () async {
-                  if (needIconBack!) Navigator.pop(context);
-                },
-            child: Container(
-              height: 40.sp,
-              width: 40.sp,
-              padding: EdgeInsets.symmetric(horizontal: 2.w),
-              color: Colors.redAccent.withOpacity(0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Transform.rotate(
-                    angle: needRotate! ? -pi / 2 : 0,
-                    child: SvgPicture.asset('${iconsPath}back.svg',
-                        width: 20.sp,
-                        height: 20.sp,
-                        fit: BoxFit.none,
-                        color: needIconBack!
-                            ? Theme.of(context).secondaryHeaderColor
-                            : Colors.white.withOpacity(0)),
-                  ),
-                ],
+    return SizedBox(
+      height: availableHeight / 10,
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Row(
+          children: [
+            const Flexible(fit: FlexFit.tight, child: SizedBox.shrink()),
+            Flexible(
+              flex: 8,
+              fit: FlexFit.tight,
+              child: Center(
+                child: Material(
+                    color: Colors.transparent,
+                    shape: const CircleBorder(),
+                    clipBehavior: Clip.hardEdge,
+                    child: InkWell(
+                      onTap: onPress ??
+                          () async {
+                            if (needIconBack) Navigator.pop(context);
+                          },
+                      child: Ink(
+                          padding: EdgeInsets.all(availableHeight / 60),
+                          child: Transform.rotate(
+                            angle: needRotate! ? -pi / 2 : 0,
+                            child: SvgPicture.asset('${iconsPath}back.svg',
+                                width: availableHeight / 40,
+                                height: availableHeight / 40,
+                                color: needIconBack
+                                    ? Theme.of(context).secondaryHeaderColor
+                                    : Colors.white.withOpacity(0)),
+                          )),
+                    )),
               ),
             ),
-          ),
-          if (title != null)
-            Text(
-              title!,
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-          GestureDetector(
-            onTap: iconPress ?? () {},
-            child: Container(
-              height: 40.sp,
-              width: 40.sp,
-              padding: EdgeInsets.symmetric(horizontal: 2.w),
-              color: Colors.redAccent.withOpacity(0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  if (icon == 'tree_dots')
-                    Transform.rotate(
-                      angle: pi / 2,
-                      child: Icon(
-                        size: 15.sp,
-                        Icons.more_horiz,
-                        color: Theme.of(context).cardColor,
-                        fill: 0.8,
-                      ),
-                    )
-                  else
-                    SvgPicture.asset(
-                      fit: BoxFit.none,
-                      icon != null
-                          ? '$iconsPath$icon.svg'
-                          : '${iconsPath}back.svg',
-                      color: iconColor == null && icon == null
-                          ? Colors.white.withOpacity(0)
-                          : iconColor ?? Theme.of(context).splashColor,
-                    ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
+            if (title != null) ...[
+              Flexible(
+                  flex: 36,
+                  fit: FlexFit.tight,
+                  child: Text(
+                    title!,
+                    style: GoogleFonts.montserrat(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18.sp,
+                        color: Colors.black),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                  )),
+            ],
+            const Flexible(
+                flex: 9, fit: FlexFit.tight, child: SizedBox.shrink())
+          ],
+        )
+      ]),
     );
   }
 }

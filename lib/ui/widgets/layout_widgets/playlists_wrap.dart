@@ -2,10 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:muzzone/config/path/path.dart';
-import 'package:muzzone/config/style/style.dart';
+import 'package:muzzone/config/config.dart';
 import 'package:muzzone/data/models/playlist.dart';
 import 'package:muzzone/data/repositories/remote_repositories/backend_repository.dart';
 import 'package:muzzone/generated/locale_keys.g.dart';
@@ -21,11 +20,7 @@ import 'package:muzzone/logic/blocs/genres/genres_state.dart';
 import 'package:muzzone/logic/blocs/playlists/playlists_bloc.dart';
 import 'package:muzzone/logic/blocs/playlists/playlists_event.dart';
 import 'package:muzzone/logic/blocs/playlists/playlists_state.dart';
-import 'package:muzzone/ui/controllers/controllers.dart';
-import 'package:sizer/sizer.dart';
 
-import '../../../config/routes/arguments/album_page_arguments.dart';
-import '../../../config/routes/arguments/page_with_playlists_argument.dart';
 import '../../pages/album/view/album_page.dart';
 import '../../pages/search/widgets/search_chosen_genre_page/search_chosen_genre_page.dart';
 import '../../pages/search/widgets/search_special_genre_page/search_special_genres_page.dart';
@@ -47,17 +42,17 @@ class PlaylistsWrap extends StatelessWidget {
     late Bloc bloc;
 
     if (item.last.isGenre) {
-      bloc = GenresBloc(backendRepository: GetIt.I.get<BackendRepository>());
+      bloc = GenresBloc(backendRepository: context.read<BackendRepository>());
     }
     if (item.last.isLanguage) {
       bloc =
-          CategoriesBloc(backendRepository: GetIt.I.get<BackendRepository>());
+          CategoriesBloc(backendRepository: context.read<BackendRepository>());
     }
     if (item.last.isAlbum) {
-      bloc = AlbumsBloc(backendRepository: GetIt.I.get<BackendRepository>());
+      bloc = AlbumsBloc(backendRepository: context.read<BackendRepository>());
     }
     if (item.last.isBackendPlaylist) {
-      bloc = PlaylistsBloc(backendRepository: GetIt.I.get<BackendRepository>());
+      bloc = PlaylistsBloc(backendRepository: context.read<BackendRepository>());
     }
 
     return MultiBlocProvider(
@@ -164,7 +159,7 @@ class PlaylistsWrap extends StatelessWidget {
 
 class _PlaylistsWrap extends StatefulWidget {
   const _PlaylistsWrap(
-      {super.key,
+      {
       required this.item,
       required this.fromPage,
       required this.pagingController,
@@ -180,8 +175,6 @@ class _PlaylistsWrap extends StatefulWidget {
 }
 
 class _PlaylistsWrapState extends State<_PlaylistsWrap> {
-  final con = GetIt.I.get<MainController>();
-
   @override
   void initState() {
     widget.pagingController.addPageRequestListener((pageKey) {
@@ -210,125 +203,128 @@ class _PlaylistsWrapState extends State<_PlaylistsWrap> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.only(left: 7.w, right: 7.w, bottom: 3.h),
-        child: SizedBox(
-          height: 60.h,
-          child: CustomScrollView(
-            slivers: [
-              if (widget.item.last.isGenre) ...[
-                SliverToBoxAdapter(
-                  child: GestureDetector(
-                    onTap: () async => goNextPage(
-                      context,
-                      const MyPlaylist(
-                          title: 'По жанру',
-                          image: '${imagesMainPagePath}111.png'),
-                    ),
-                    child: Container(
-                      height: (86.w - 5.w) / 2,
-                      decoration: BoxDecoration(
-                        image: const DecorationImage(
-                          image: AssetImage('${imagesMainPagePath}111.png'),
-                          fit: BoxFit.cover,
-                        ),
-                        borderRadius: BorderRadius.circular(7),
+    return Container(
+        color: Colors.white,
+        child: Padding(
+            padding: EdgeInsets.only(
+                left: availableWidth / 35, right: availableWidth / 35),
+            child: CustomScrollView(
+              slivers: [
+                if (widget.item.last.isGenre) ...[
+                  SliverToBoxAdapter(
+                    child: GestureDetector(
+                      onTap: () async => goNextPage(
+                        context,
+                        const MyPlaylist(
+                            title: 'По жанру',
+                            image: '${imagesMainPagePath}111.png'),
                       ),
-                      child: Center(
-                        child: Text(
-                          'По жанру',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 3.h,
-                            fontWeight: FontWeight.bold,
+                      child: Container(
+                        height: availableHeight / 3.7,
+                        decoration: BoxDecoration(
+                          image: const DecorationImage(
+                            image: AssetImage('${imagesMainPagePath}111.png'),
+                            fit: BoxFit.cover,
                           ),
-                          textAlign: TextAlign.center,
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                        child: Center(
+                          child: Text(
+                            'По жанру',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 28.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SliverToBoxAdapter(
-                    child: SizedBox(
-                  height: 10,
-                )),
+                  SliverToBoxAdapter(
+                      child: SizedBox(
+                    height: availableHeight / 50,
+                  )),
+                ],
+                SliverPadding(
+                    padding: EdgeInsets.only(bottom: availableHeight / 25),
+                    sliver: PagedSliverGrid<int, MyPlaylist>(
+                      pagingController: widget.pagingController,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisSpacing: availableHeight / 50,
+                        mainAxisSpacing: availableHeight / 50,
+                        crossAxisCount: 2,
+                      ),
+                      builderDelegate: PagedChildBuilderDelegate<MyPlaylist>(
+                        noItemsFoundIndicatorBuilder: (_) => Center(
+                            child: Text(
+                          LocaleKeys.no_content.tr(),
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primaryColor,
+                          ),
+                        )),
+                        firstPageErrorIndicatorBuilder: (_) => Center(
+                            child: Text(
+                          LocaleKeys.something_went_wrong.tr(),
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primaryColor,
+                          ),
+                        )),
+                        newPageErrorIndicatorBuilder: (_) => Center(
+                            child: Text(
+                          LocaleKeys.something_went_wrong.tr(),
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primaryColor,
+                          ),
+                        )),
+                        itemBuilder: (context, item, index) {
+                          return GestureDetector(
+                            onTap: () async => goNextPage(context, item),
+                            child: Container(
+                              width: availableWidth / 2,
+                              height: availableWidth / 2,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: CachedNetworkImageProvider(item.image),
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: BorderRadius.circular(7),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  item.title,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 28.sp,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    )),
               ],
-              PagedSliverGrid<int, MyPlaylist>(
-                pagingController: widget.pagingController,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisSpacing: 3.2.w,
-                  mainAxisSpacing: 1.5.h,
-                  crossAxisCount: 2,
-                ),
-                builderDelegate: PagedChildBuilderDelegate<MyPlaylist>(
-                  noItemsFoundIndicatorBuilder: (_) => Center(
-                      child: Text(
-                    LocaleKeys.no_content.tr(),
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryColor,
-                    ),
-                  )),
-                  firstPageErrorIndicatorBuilder: (_) => Center(
-                      child: Text(
-                    LocaleKeys.something_went_wrong.tr(),
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryColor,
-                    ),
-                  )),
-                  newPageErrorIndicatorBuilder: (_) => Center(
-                      child: Text(
-                    LocaleKeys.something_went_wrong.tr(),
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryColor,
-                    ),
-                  )),
-                  itemBuilder: (context, item, index) => GestureDetector(
-                    onTap: () async => goNextPage(context, item),
-                    child: Container(
-                      width: (86.w - 5.w) / 2,
-                      height: (86.w - 5.w) / 2,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: CachedNetworkImageProvider(item.image),
-                          fit: BoxFit.cover,
-                        ),
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                      child: Center(
-                        child: Text(
-                          item.title,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 3.h,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-        ));
+            )));
   }
 
   Future<void> goNextPage(BuildContext context, MyPlaylist playlist) async {
     if (playlist.title == 'По жанру') {
       await Navigator.of(context).pushNamed(SearchSpecialGenresPage.id);
     } else if (widget.fromPage == 'show_all_page') {
-      print('LOG_TAG I AM HERE goNextPage ');
       await Navigator.of(context).pushNamed(AlbumPage.id,
-          arguments: AlbumPageArguments(item: playlist, album: playlist.audios));
+          arguments:
+              AlbumPageArguments(item: playlist, album: playlist.audios));
     } else {
-      print('LOG_TAG I AM HERE goNextPage 1 ');
       await Navigator.of(context).pushNamed(SearchChosenGenrePage.id,
           arguments: PageWithPlaylistArgument(playlist: playlist));
     }

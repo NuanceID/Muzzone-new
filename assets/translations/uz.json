@@ -91,5 +91,6 @@
   "validation_status": "Tasdiqlash holati: ",
   "valid": "Toʻgʻri",
   "invalid": "Noto'g'ri",
-  "no_content": "Tarkib yo'q"
+  "no_content": "Tarkib yo'q",
+  "repeat_tap_to_exit": "Chiqish uchun yana \"Orqaga\" tugmasini bosing"
 }

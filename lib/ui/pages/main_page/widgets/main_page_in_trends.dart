@@ -1,51 +1,40 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:muzzone/config/constants/constants.dart';
 import 'package:muzzone/config/style/style.dart';
 import 'package:muzzone/config/utils/placeholders.dart';
 import 'package:muzzone/data/repositories/remote_repositories/backend_repository.dart';
+import 'package:muzzone/logic/blocs/audio/audio_event.dart';
 import 'package:muzzone/logic/blocs/trends/trends_bloc.dart';
 import 'package:muzzone/logic/blocs/trends/trends_event.dart';
 import 'package:muzzone/logic/blocs/trends/trends_state.dart';
-import 'package:muzzone/ui/controllers/controllers.dart';
 import 'package:muzzone/ui/widgets/widgets.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../../../config/routes/arguments/show_all_arguments.dart';
 import '../../../../generated/locale_keys.g.dart';
-import '../../player_page/bloc/audio_bloc.dart';
+import '../../../../logic/blocs/audio/audio_bloc.dart';
 import '../../show_all_page/show_all_page.dart';
 
 import 'package:shimmer/shimmer.dart';
 
 class MainPageInTrends extends StatelessWidget {
-  MainPageInTrends({Key? key, required this.con}) : super(key: key);
-
-  final MainController con;
-
-  final audioBloc = GetIt.I.get<AudioBloc>();
+  const MainPageInTrends({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TrendsBloc>(
         create: (BuildContext context) =>
-            TrendsBloc(backendRepository: GetIt.I.get<BackendRepository>())
+            TrendsBloc(backendRepository: context.read<BackendRepository>())
               ..add(const GetTrends()),
-        child: _MainPageInTrends(
-          con: con,
-          audioBloc: audioBloc,
-        ));
+        child: const _MainPageInTrends());
   }
 }
 
 class _MainPageInTrends extends StatefulWidget {
-  const _MainPageInTrends(
-      {super.key, required this.con, required this.audioBloc});
-
-  final MainController con;
-  final AudioBloc audioBloc;
+  const _MainPageInTrends();
 
   @override
   State<_MainPageInTrends> createState() => _MainPageInTrendsState();
@@ -54,6 +43,8 @@ class _MainPageInTrends extends StatefulWidget {
 class _MainPageInTrendsState extends State<_MainPageInTrends> {
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<AudioBloc>(context).add(ClearPlaylist());
+
     return BlocBuilder<TrendsBloc, TrendsState>(builder: (context, state) {
       if (state.trendsStatus == TrendsStatus.loading ||
           state.trendsStatus == TrendsStatus.initial) {
@@ -67,147 +58,88 @@ class _MainPageInTrendsState extends State<_MainPageInTrends> {
             ));
       }
 
-      var audios = state.trends.tracks
-          .map((e) => Audio.network(
-                e.file,
-                metas: Metas(
-                  id: e.id.toString(),
-                  title: e.name,
-                  artist: e.name,
-                  album: e.name,
-                  extra: {
-                    'isPopular': false,
-                    'isNew': false,
-                  },
-                  image: MetasImage.network(e.cover),
-                ),
-              ))
-          .toList();
+      var playlist = state.trends.tracks
+          .map((e) => MediaItem(
+        id: e.file,
+        title: e.name,
+        album: e.album.name,
+        artist: e.artists.map((element) => element.name).toList().join(', '),
+        artUri: Uri.parse(e.cover),
 
-      if (state.trendsStatus == TrendsStatus.success && audios.isEmpty) {
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 5.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Container(
-                  width: 100.w,
-                  height:
-                      (4.h + 2.05.h + 8.h + 2.h + 8.h + 2.h + 8.h + 2.h + 8.h),
-                  color: Colors.white,
-                  child: Center(
-                      child: Text(
-                    LocaleKeys.no_content.tr(),
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryColor,
-                    ),
-                  )))
-            ],
-          ),
-        );
+      )).toList();
+
+      BlocProvider.of<AudioBloc>(context).add(SetPlaylist(
+          playlist: playlist));
+
+      if (state.trendsStatus == TrendsStatus.success && playlist.isEmpty) {
+        return SizedBox(
+            height: availableHeight / 2.42,
+            child: Center(
+                child: Text(
+              LocaleKeys.no_content.tr(),
+              style: TextStyle(
+                fontSize: 20.sp,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primaryColor,
+              ),
+            )));
       }
 
       if (state.trendsStatus == TrendsStatus.failure) {
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 5.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Container(
-                  width: 100.w,
-                  height:
-                      (4.h + 2.05.h + 8.h + 2.h + 8.h + 2.h + 8.h + 2.h + 8.h),
-                  color: Colors.white,
-                  child: Center(
-                      child: Text(
-                    LocaleKeys.something_went_wrong.tr(),
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryColor,
-                    ),
-                  )))
-            ],
-          ),
-        );
+        return SizedBox(
+            height: availableHeight / 2.42,
+            child: Center(
+                child: Text(
+              LocaleKeys.something_went_wrong.tr(),
+              style: TextStyle(
+                fontSize: 20.sp,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primaryColor,
+              ),
+            )));
       }
 
       return Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          TitleWithButtonShowAll(
+          Flexible(
+              child: TitleWithButtonShowAll(
             fromPage: 'main_page',
             title: LocaleKeys.in_trends.tr(),
-            item: audios,
+            item: playlist,
             onPress: () {
               Navigator.of(context).pushNamed(ShowAllPage.id,
                   arguments: ShowAllPageArguments(
-                    item: audios,
+                    item: playlist,
                     id: state.trends.id,
                     title: LocaleKeys.in_trends.tr(),
                     fromPage: 'main_page',
                   ));
             },
-          ),
-          ListView.builder(
-            padding: EdgeInsets.only(top: 2.h),
-            shrinkWrap: true,
-            physics: const ScrollPhysics(),
-            itemCount: audios.length < 5 ? audios.length : 4,
-            itemBuilder: (context, index) => AudioRow(
-              audio: audios[index],
-              height: 7.h,
-              onPress: () {
-                widget.con.playSong(audios, index);
-                widget.audioBloc.add(StartPlaying(audios));
-              },
+          )),
+          Flexible(
+            child: SizedBox(
+              height: availableHeight / 30,
             ),
           ),
-          SizedBox(
-            height: 2.h,
-          ),
+          Flexible(
+              child: ListView.builder(
+            shrinkWrap: true,
+            physics: const ScrollPhysics(),
+            itemCount: playlist.length < 5 ? playlist.length : 4,
+            itemBuilder: (context, index) => AudioRow(
+              audio: playlist[index],
+              onPress: () {
+                print('LOG_TAG I AM HERE');
+                BlocProvider.of<AudioBloc>(context).add(OpenMiniPlayer());
+                BlocProvider.of<AudioBloc>(context)
+                    .add(Play(audioPath: playlist[index].id));
+              },
+            ),
+          )),
         ],
       );
     });
-    /*return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        TitleWithButtonShowAll(
-          fromPage: 'main_page',
-          title: LocaleKeys.in_trends.tr(),
-          item: con.audios,
-          onPress: () {
-            Navigator.of(context).pushNamed(ShowAllPage.id,
-                arguments: ShowAllPageArguments(
-                    item: con.audios,
-                    title: LocaleKeys.in_trends.tr(),
-                    fromPage: 'main_page'));
-          },
-        ),
-        ListView.builder(
-          padding: EdgeInsets.only(top: 2.h),
-          shrinkWrap: true,
-          physics: const ScrollPhysics(),
-          itemCount: LocalSongsRepository.localSongs.length,
-          itemBuilder: (context, index) => AudioRow(
-            audio: con.audios[index],
-            height: 7.h,
-            onPress: () {
-              con.playSong(con.audios, index);
-              audioBloc.add(StartPlaying(con.audios));
-            },
-          ),
-        ),
-        SizedBox(
-          height: 2.h,
-        ),
-      ],
-    );*/
   }
 }

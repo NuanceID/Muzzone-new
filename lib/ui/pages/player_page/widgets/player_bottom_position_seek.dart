@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../config/style/style.dart';
 import '../../../widgets/common_widgets/custom_track_shape.dart';
-import '../bloc/audio_bloc.dart';
 
 class PlayerBottomPositionSeek extends StatefulWidget {
   const PlayerBottomPositionSeek({
@@ -29,8 +28,6 @@ class _PlayerBottomPositionSeekState extends State<PlayerBottomPositionSeek> {
       ? 0
       : _visibleValue.inMilliseconds / widget.duration.inMilliseconds;
 
-  final audioBloc = GetIt.I.get<AudioBloc>();
-
   @override
   void initState() {
     super.initState();
@@ -47,13 +44,16 @@ class _PlayerBottomPositionSeekState extends State<PlayerBottomPositionSeek> {
 
   @override
   Widget build(BuildContext context) {
-    return SliderTheme(
+
+    return Material(
+        color: Colors.transparent,
+        child: SliderTheme(
       data: SliderThemeData(
         overlayShape: SliderComponentShape.noOverlay,
         trackShape: CustomTrackShape(),
-        trackHeight: 0.5,
+        trackHeight: 0.5.h,
         thumbShape: const RoundSliderThumbShape(
-          enabledThumbRadius: 0.5,
+          enabledThumbRadius: 0,
         ),
       ),
       child: Slider(
@@ -64,6 +64,6 @@ class _PlayerBottomPositionSeekState extends State<PlayerBottomPositionSeek> {
         value: percent * widget.duration.inMilliseconds.toDouble(),
         onChanged: (double value) {},
       ),
-    );
+    ));
   }
 }

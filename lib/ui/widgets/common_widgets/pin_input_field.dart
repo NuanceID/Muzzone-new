@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
-import 'package:sizer/sizer.dart';
 
 class PinInputField extends StatefulWidget {
   final int length;
@@ -15,20 +17,17 @@ class PinInputField extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
-  _PinInputFieldState createState() => _PinInputFieldState();
+  State<PinInputField> createState() => _PinInputFieldState();
 }
 
-class _PinInputFieldState extends State<PinInputField> {
+class _PinInputFieldState extends State<PinInputField> with WidgetsBindingObserver {
   late final TextEditingController _pinPutController;
   late final FocusNode _pinPutFocusNode;
   late final int _length;
 
   Size _findContainerSize(BuildContext context) {
-    // full screen width
     double width = MediaQuery.of(context).size.width * 0.85;
 
-    // using left-over space to get width of each container
     width /= _length;
 
     return Size.square(width);
@@ -36,8 +35,10 @@ class _PinInputFieldState extends State<PinInputField> {
 
   @override
   void initState() {
+    super.initState();
     _pinPutController = TextEditingController();
     _pinPutFocusNode = FocusNode();
+    WidgetsBinding.instance.addObserver(this);
 
     if (widget.onFocusChange != null) {
       _pinPutFocusNode.addListener(() {
@@ -46,14 +47,26 @@ class _PinInputFieldState extends State<PinInputField> {
     }
 
     _length = widget.length;
-    super.initState();
   }
 
   @override
   void dispose() {
     _pinPutController.dispose();
     _pinPutFocusNode.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    keyboardHidden.then((value) => value ? _pinPutFocusNode.requestFocus() : null);
+  }
+
+  Future<bool> get keyboardHidden async {
+    check() => (WidgetsBinding.instance.window.viewInsets.bottom) > 0;
+
+    if (!check()) return false;
+    return await Future.delayed(const Duration(milliseconds: 100), () => check());
   }
 
   PinTheme _getPinTheme(
@@ -63,14 +76,13 @@ class _PinInputFieldState extends State<PinInputField> {
     return PinTheme(
       height: size.height,
       width: size.width,
-      textStyle: TextStyle(
-        fontSize: 17.sp,
-        fontWeight: FontWeight.bold,
-        color: Theme.of(context).splashColor,
-      ),
+      textStyle: GoogleFonts.montserrat(
+          fontWeight: FontWeight.bold,
+          fontSize: 20.sp,
+          color: Theme.of(context).splashColor),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
-        borderRadius: BorderRadius.circular(7.5),
+        borderRadius: BorderRadius.circular(7.5.r),
         border: Border.all(
           width: 1,
           color: Theme.of(context).splashColor,
@@ -86,11 +98,17 @@ class _PinInputFieldState extends State<PinInputField> {
     final size = _findContainerSize(context);
     final defaultPinTheme = _getPinTheme(context, size: size);
 
+    _pinPutFocusNode.requestFocus();
+
     return SizedBox(
       height: size.height * _focusScaleFactor,
       child: Pinput(
-        autofocus: true,
+        focusNode: _pinPutFocusNode,
+        controller: _pinPutController,
         length: _length,
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly
+        ],
         defaultPinTheme: defaultPinTheme,
         focusedPinTheme: defaultPinTheme.copyWith(
           height: size.height * _focusScaleFactor,
@@ -101,22 +119,12 @@ class _PinInputFieldState extends State<PinInputField> {
         ),
         errorPinTheme: defaultPinTheme.copyWith(
           decoration: BoxDecoration(
-            color: Theme.of(context).errorColor,
-            borderRadius: BorderRadius.circular(8),
+            color: Theme.of(context).colorScheme.error,
+            borderRadius: BorderRadius.circular(8.r),
           ),
         ),
-        focusNode: _pinPutFocusNode,
-        controller: _pinPutController,
         onCompleted: widget.onSubmit,
         pinAnimationType: PinAnimationType.scale,
-        // submittedFieldDecoration: _pinPutDecoration,
-        // selectedFieldDecoration: _pinPutDecoration,
-        // followingFieldDecoration: _pinPutDecoration,
-        // textStyle: const TextStyle(
-        //   color: Colors.black,
-        //   fontSize: 20.0,
-        //   fontWeight: FontWeight.w600,
-        // ),
       ),
     );
   }

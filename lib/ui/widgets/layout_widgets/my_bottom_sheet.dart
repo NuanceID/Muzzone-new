@@ -1,20 +1,21 @@
+/*
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get_it/get_it.dart';
 import 'package:muzzone/config/config.dart';
+import 'package:muzzone/logic/blocs/audio/audio_state.dart';
+import 'package:muzzone/logic/blocs/favourite_audios/favourite_audios_bloc.dart';
+import 'package:muzzone/logic/blocs/favourite_audios/favourite_audios_event.dart';
+import 'package:muzzone/logic/blocs/favourite_audios/favourite_audios_state.dart';
 import 'package:muzzone/logic/functions/share_function.dart';
-import 'package:muzzone/ui/controllers/controllers.dart';
-import 'package:muzzone/ui/pages/my_music/bloc/favourite_audios_bloc.dart';
+import 'package:muzzone/logic/blocs/favorite_audios/favourite_audios_bloc.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../data/data.dart';
 import '../../../generated/locale_keys.g.dart';
 import '../../pages/album/view/album_page.dart';
-import '../../pages/artist/view/artist_page.dart';
-import '../../pages/player_page/bloc/audio_bloc.dart';
+import '../../../logic/blocs/audio/audio_bloc.dart';
 
 class MyBottomSheet extends StatelessWidget {
   const MyBottomSheet({Key? key, required this.fromPage, required this.item})
@@ -94,7 +95,7 @@ class CancelButtonBottomSheet extends StatelessWidget {
 }
 
 class ColumnBottomSheet extends StatelessWidget {
-  ColumnBottomSheet({
+  const ColumnBottomSheet({
     Key? key,
     required this.item,
     required this.fromPage,
@@ -102,11 +103,13 @@ class ColumnBottomSheet extends StatelessWidget {
 
   final dynamic item;
   final String fromPage;
-  final con = GetIt.I.get<MainController>();
-  final favouriteAudiosBloc = GetIt.I.get<FavouriteAudiosBloc>();
+
 
   @override
   Widget build(BuildContext context) {
+
+    final favouriteAudiosBloc = context.read<FavouriteAudiosBloc>();
+
     return Column(
       children: [
         if (item is Audio)
@@ -139,12 +142,6 @@ class ColumnBottomSheet extends StatelessWidget {
               text: LocaleKeys.go_to_artist.tr(),
               onPress: () {
                 Navigator.pop(context);
-                for (var artist in ArtistsRepository.localArtists) {
-                  if (artist.name == item.metas.artists) {
-                    Navigator.of(context).pushNamed(ArtistPage.id,
-                        arguments: ArtistPageArguments(artist: artist));
-                  }
-                }
               }),
         if (item is Audio && fromPage != 'album_page')
           ButtonBottomSheet(
@@ -294,3 +291,4 @@ class HeaderTitleBottomSheet extends StatelessWidget {
     );
   }
 }
+*/

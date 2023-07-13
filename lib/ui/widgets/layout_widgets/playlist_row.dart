@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:muzzone/config/config.dart';
+import 'package:muzzone/data/models/playlist.dart';
 import 'package:muzzone/ui/widgets/buttons/three_dots_button.dart';
-import 'package:sizer/sizer.dart';
-
-import '../../../data/data.dart';
 
 mixin PlaylistRowImageMixin on StatelessWidget {
   Widget buildImage(BuildContext context, MyPlaylist playlist, double height) {

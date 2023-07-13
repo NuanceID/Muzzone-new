@@ -1,9 +1,11 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
+
+
+import 'package:audio_service/audio_service.dart';
 
 class MyPlaylist {
   final int id;
   final String title;
-  final List<Audio> audios;
+  final List<MediaItem> audios;
   final String image;
   final bool isGenre;
   final bool isAlbum;
@@ -14,7 +16,7 @@ class MyPlaylist {
   const MyPlaylist(
       {this.id = -1,
         this.title = '',
-        this.audios = const <Audio>[],
+        this.audios = const <MediaItem>[],
         this.image = '',
         this.isGenre = false,
         this.isAlbum = false,

@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'support_event.dart';
 part 'support_state.dart';

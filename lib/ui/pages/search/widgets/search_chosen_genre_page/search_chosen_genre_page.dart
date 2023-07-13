@@ -1,8 +1,7 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:muzzone/config/config.dart';
 import 'package:muzzone/data/models/track.dart';
@@ -10,10 +9,7 @@ import 'package:muzzone/data/repositories/remote_repositories/backend_repository
 import 'package:muzzone/logic/blocs/genres/genres_bloc.dart';
 import 'package:muzzone/logic/blocs/genres/genres_event.dart';
 import 'package:muzzone/logic/blocs/genres/genres_state.dart';
-import 'package:muzzone/ui/controllers/main_controller.dart';
-import 'package:muzzone/ui/pages/search/widgets/search_popular_and_new_songs.dart';
 import 'package:muzzone/ui/widgets/widgets.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../../../../generated/locale_keys.g.dart';
 
@@ -25,12 +21,12 @@ class SearchChosenGenrePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final initArgs =
-        ModalRoute.of(context)!.settings.arguments as PageWithPlaylistArgument;
+    ModalRoute.of(context)!.settings.arguments as PageWithPlaylistArgument;
 
-    Bloc bloc = GenresBloc(backendRepository: GetIt.I.get<BackendRepository>());
+    Bloc bloc = GenresBloc(backendRepository: context.read<BackendRepository>());
 
     final PagingController<int, Track> pagingController =
-        PagingController<int, Track>(firstPageKey: 1);
+    PagingController<int, Track>(firstPageKey: 1);
 
     return BlocProvider<GenresBloc>(
         create: (BuildContext context) => bloc,
@@ -63,9 +59,9 @@ class SearchChosenGenrePage extends StatelessWidget {
 class _SearchChosenGenrePage extends StatefulWidget {
   const _SearchChosenGenrePage(
       {Key? key,
-      required this.bloc,
-      required this.pagingController,
-      required this.genreId})
+        required this.bloc,
+        required this.pagingController,
+        required this.genreId})
       : super(key: key);
 
   final Bloc bloc;
@@ -82,8 +78,6 @@ class _SearchChosenGenrePageState extends State<_SearchChosenGenrePage>
   late ScrollController _scrollController;
   var currentPage = 0;
   final GlobalKey<NavigatorState> kNavigatorKey = GlobalKey<NavigatorState>();
-
-  final MainController con = GetIt.I.get<MainController>();
 
   @override
   void initState() {
@@ -128,7 +122,7 @@ class _SearchChosenGenrePageState extends State<_SearchChosenGenrePage>
   @override
   Widget build(BuildContext context) {
     final args =
-        ModalRoute.of(context)!.settings.arguments as PageWithPlaylistArgument;
+    ModalRoute.of(context)!.settings.arguments as PageWithPlaylistArgument;
 
     return NotificationListener<OverscrollIndicatorNotification>(
       onNotification: (OverscrollIndicatorNotification overscroll) {
@@ -178,14 +172,14 @@ class _SearchChosenGenrePageState extends State<_SearchChosenGenrePage>
               return TabBarView(
                 controller: _tabController,
                 children: [
-                  SearchPopularAndNewSongs(
+                  /*SearchPopularAndNewSongs(
                     pagingController: widget.pagingController,
                     isPopular: true,
                   ),
                   SearchPopularAndNewSongs(
                     pagingController: widget.pagingController,
                     isPopular: false,
-                  ),
+                  ),*/
                 ],
               );
             }),

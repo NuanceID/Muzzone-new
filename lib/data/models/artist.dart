@@ -1,4 +1,4 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:muzzone/data/models/playlist.dart';
 import 'package:muzzone/data/models/track.dart';
 
@@ -7,7 +7,7 @@ class Artist {
   final String name;
   final String description;
   final List<MyPlaylist> albums;
-  final List<Audio> audio;
+  final List<MediaItem> audio;
   final String cover;
   final List<Track> tracks;
 
@@ -16,7 +16,7 @@ class Artist {
     this.name = '',
     this.description = '',
     this.albums = const <MyPlaylist>[],
-    this.audio = const <Audio>[],
+    this.audio = const <MediaItem>[],
     this.cover = '',
     this.tracks = const <Track>[],
   });
@@ -30,7 +30,7 @@ class Artist {
         name: json['name'] ?? '',
         description: json['description'] ?? '',
         albums: <MyPlaylist>[],
-        audio: <Audio>[],
+        audio: <MediaItem>[],
         cover: json['cover'] ?? '',
         tracks: tracksFromJson.map((e) => Track.fromJson(e)).toList());
   }

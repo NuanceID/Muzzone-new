@@ -1,14 +1,14 @@
+/*
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:muzzone/data/models/playlist.dart';
 import 'package:muzzone/generated/locale_keys.g.dart';
 import 'package:muzzone/ui/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../../../../config/routes/arguments/album_page_arguments.dart';
 import '../../../../../../config/routes/arguments/show_all_arguments.dart';
-import '../../../../../../data/data.dart';
 import '../../../../../../logic/functions/alert_dialog_create_playlist.dart';
-import '../../../../../widgets/layout_widgets/playlist_row.dart';
 import '../../../../search/widgets/search_chosen_genre_page/search_chosen_genre_page.dart';
 import '../../../../show_all_page/show_all_page.dart';
 
@@ -34,12 +34,12 @@ class _MyMediaPageState extends State<MyMediaPage> {
   void _buildAlertDialogCreatePlaylist(BuildContext context) {
     return alertDialogCreatePlaylist(
       context,
-      (value) {
+          (value) {
         setState(() {
           nameNewPlaylist = value;
         });
       },
-      () => _addNewPlaylist(context),
+          () => _addNewPlaylist(context),
     );
   }
 
@@ -66,7 +66,7 @@ class _MyMediaPageState extends State<MyMediaPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PageLayout(
+    return Column(
       children: [
         HeaderTitle(
           title: LocaleKeys.my_media.tr(),
@@ -83,7 +83,7 @@ class _MyMediaPageState extends State<MyMediaPage> {
           onPress: () {
             Navigator.of(context).pushNamed(ShowAllPage.id,
                 arguments: ShowAllPageArguments(
-                    //item: list,
+                  //item: list,
                     title: LocaleKeys.my_playlists.tr(),
                     fromPage: 'main_page'));
           },
@@ -109,3 +109,4 @@ class _MyMediaPageState extends State<MyMediaPage> {
     );
   }
 }
+*/

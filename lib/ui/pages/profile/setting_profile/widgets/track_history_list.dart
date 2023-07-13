@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TrackHistoryList extends StatelessWidget {
   const TrackHistoryList({Key? key, required this.list}) : super(key: key);

@@ -11,7 +11,7 @@ class PrivacyPolicyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageLayout(
+    return Column(
       children: [
         HeaderTitle(
           title: LocaleKeys.privacy_policy.tr(),

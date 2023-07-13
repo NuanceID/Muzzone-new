@@ -9,8 +9,3 @@ class TrackHistoryState {
     return TrackHistoryState(isOpen: isOpen);
   }
 }
-
-class TrackHistoryInitial extends TrackHistoryState {
-  final bool isOpen;
-  TrackHistoryInitial({required this.isOpen}) : super(isOpen: isOpen);
-}

@@ -1,313 +1,347 @@
-import 'dart:developer' as devtools show log;
+import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:muzzone/config/config.dart';
 import 'package:muzzone/config/strings.dart';
+import 'package:muzzone/data/local_data_store/local_data_store.dart';
 import 'package:muzzone/generated/locale_keys.g.dart';
 import 'package:muzzone/logic/blocs/authorization/authorization_bloc.dart';
 import 'package:muzzone/logic/blocs/authorization/authorization_event.dart';
 import 'package:muzzone/logic/blocs/authorization/authorization_state.dart';
-import 'package:muzzone/ui/pages/auth/utils/store.dart';
-import 'package:muzzone/ui/pages/auth/view/verify_phone_number_page.dart';
-import 'package:muzzone/ui/pages/loading_page.dart';
-import 'package:muzzone/ui/widgets/widgets.dart';
-import 'package:sizer/sizer.dart';
+import 'package:muzzone/logic/blocs/input_validator/input_validator_bloc.dart';
+import 'package:muzzone/logic/blocs/input_validator/input_validator_event.dart';
+import 'package:muzzone/logic/blocs/input_validator/input_validator_state.dart';
 
-import '../../../../logic/blocs/bottom_bar/bottom_bar_bloc.dart';
-import '../../../../logic/functions/dismiss_keyboard.dart';
-import '../models/region.dart';
+import 'package:muzzone/ui/pages/auth/view/verify_phone_number_page.dart';
 
 class AuthenticationPage extends StatelessWidget {
   static const id = 'AuthenticationScreen';
 
-  final Store store;
-
-  const AuthenticationPage(
-    this.store, {
-    Key? key,
-  }) : super(key: key);
+  const AuthenticationPage({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthorizationBloc, AuthorizationState>(
-      listener: (context, state) {
-        if (state.authorizationStatus == AuthorizationStatus.success) {
+    return WillPopScope(
+        onWillPop: () async {
+          LocalDataStore store = LocalDataStore();
 
-          if(state.serverMessage == authCodeSentSuccessfully) {
-            Navigator.pushNamed(
-              context,
-              VerifyPhoneNumberPage.id,
-              arguments: TempPhoneArguments(phoneNumber: state.phoneNumber),
-            );
-            return;
+          DateTime now = DateTime.now();
+
+          if (store.getDurationTimeBetweenPress().isEmpty) {
+            store.setDurationTimeBetweenPress(now.toString());
+            showFlutterToast(AppColors.primaryColor, Colors.white,
+                LocaleKeys.repeat_tap_to_exit.tr());
+            return false;
           }
 
-          if(state.serverMessage == phoneNumberNotFound) {
-            showFlutterToast(Colors.red, Colors.white, LocaleKeys.something_went_wrong.tr());
-            return;
+          if (now
+                  .difference(
+                      DateTime.parse(store.getDurationTimeBetweenPress()))
+                  .inSeconds <
+              4) {
+            if (Platform.isAndroid) {
+              SystemNavigator.pop();
+            } else if (Platform.isIOS) {
+              exit(0);
+            }
+          } else {
+            store.setDurationTimeBetweenPress(now.toString());
+            showFlutterToast(AppColors.primaryColor, Colors.white,
+                LocaleKeys.repeat_tap_to_exit.tr());
           }
+          return false;
+        },
+        child: BlocListener<AuthorizationBloc, AuthorizationState>(
+          listener: (context, state) {
+            if (state.authorizationStatus == AuthorizationStatus.success) {
+              if (state.serverMessage == authCodeSentSuccessfully) {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    VerifyPhoneNumberPage.id, (Route<dynamic> route) => false,
+                    arguments:
+                        TempPhoneArguments(phoneNumber: state.phoneNumber));
+                return;
+              }
 
-          showFlutterToast(Colors.red, Colors.white, LocaleKeys.something_went_wrong.tr());
-        }
+              if (state.serverMessage == phoneNumberNotFound) {
+                showFlutterToast(Colors.red, Colors.white,
+                    LocaleKeys.something_went_wrong.tr());
+                return;
+              }
 
-        if (state.authorizationStatus == AuthorizationStatus.failure) {
-          showFlutterToast(Colors.red, Colors.white, LocaleKeys.something_went_wrong.tr());
-        }
-      },
-      child: _AuthenticationPage(store),
-    );
+              showFlutterToast(Colors.red, Colors.white,
+                  LocaleKeys.something_went_wrong.tr());
+            }
+
+            if (state.authorizationStatus == AuthorizationStatus.failure) {
+              showFlutterToast(Colors.red, Colors.white,
+                  LocaleKeys.something_went_wrong.tr());
+            }
+          },
+          child: const _AuthenticationPage(),
+        ));
   }
 }
 
 class _AuthenticationPage extends StatefulWidget {
-  final Store store;
-
-  const _AuthenticationPage(
-    this.store, {
-    Key? key,
-  }) : super(key: key);
+  const _AuthenticationPage();
 
   @override
-  // ignore: library_private_types_in_public_api
-  _AuthenticationPageState createState() => _AuthenticationPageState();
+  State<_AuthenticationPage> createState() => _AuthenticationPageState();
 }
 
-class _AuthenticationPageState extends State<_AuthenticationPage>
-    with AutomaticKeepAliveClientMixin {
-  bool valid = false;
-  final ctrl = TextEditingController();
-  final bottomBarBloc = GetIt.I.get<BottomBarBloc>();
+class _AuthenticationPageState extends State<_AuthenticationPage> {
+  late TextEditingController ctrl;
 
-  Future<void> validate() async {
-    if (_formKey.currentState!.validate()) {
-      dismissKeyboard(context);
-
-      valid = await widget.store.validate(
-        ctrl.text,
-        region: Region('UZ', 998, 'Узбекистан'),
-      );
-      log('isValid : $valid');
-
-      if (!mounted) return;
-      showFlutterToast(valid ? Colors.green : Colors.red, Colors.white,
-          "${LocaleKeys.validation_status.tr()} ${valid ? LocaleKeys.valid.tr() : LocaleKeys.invalid.tr()}");
-      if (valid == false) {
-        ctrl.text = '';
-      }
-    }
+  @override
+  void initState() {
+    super.initState();
+    ctrl = TextEditingController()
+      ..addListener(() {
+        if (ctrl.text.length == 9) {
+          BlocProvider.of<InputValidatorBloc>(context)
+              .add(const InputValidatorValidate(isPhoneNumberValid: true));
+        } else {
+          BlocProvider.of<InputValidatorBloc>(context)
+              .add(const InputValidatorValidate(isPhoneNumberValid: false));
+        }
+      });
   }
 
-  final _formKey = GlobalKey<FormState>();
+  @override
+  void dispose() {
+    ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return BlocBuilder<AuthorizationBloc, AuthorizationState>(
         builder: (context, state) {
       if (state.authorizationStatus == AuthorizationStatus.loading) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 20.h,
-            ),
-            const CustomLoader(),
-            SizedBox(height: 15.h),
-            Center(
-              child: Text('',
-                style: TextStyle(fontSize: 15.sp),
-              ),
+          children: const [
+            CircularProgressIndicator(
+              color: AppColors.primaryColor,
             ),
           ],
         );
       }
 
-      return GestureDetector(
-        onTap: () => dismissKeyboard(context),
-        child: PageLayout(
-          needBottomBar: false,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 20.h,
-              ),
-              Center(
-                child: Text(
-                  LocaleKeys.enter_app.tr(),
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              SizedBox(height: 12.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 7.w),
-                child: Text(
-                  LocaleKeys.enter_your_phone.tr(),
-                  style: const TextStyle(color: AppColors.greyColor),
-                ),
-              ),
-              SizedBox(
-                height: 1.5.h,
-              ),
-              KeyboardVisibilityBuilder(
-                builder: (context, visible) {
-                  return Container(
-                    padding: EdgeInsets.symmetric(horizontal: 7.w),
-                    child: Form(
-                      key: _formKey,
+      return SingleChildScrollView(
+          child: SizedBox(
+        height: availableHeight,
+        child: Column(
+          children: [
+            const Flexible(
+                flex: 10, fit: FlexFit.tight, child: SizedBox.shrink()),
+            Flexible(
+                flex: 4,
+                fit: FlexFit.tight,
+                child: Row(
+                  children: [
+                    const Flexible(
+                      fit: FlexFit.tight,
+                      child: SizedBox.shrink(),
+                    ),
+                    Flexible(
+                      flex: 8,
+                      fit: FlexFit.tight,
+                      child: Text(
+                        LocaleKeys.enter_app.tr(),
+                        style: GoogleFonts.montserrat(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 21.sp,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const Flexible(
+                      fit: FlexFit.tight,
+                      child: SizedBox.shrink(),
+                    ),
+                  ],
+                )),
+            const Flexible(
+                flex: 12, fit: FlexFit.tight, child: SizedBox.shrink()),
+            Flexible(
+                flex: 4,
+                fit: FlexFit.tight,
+                child: Row(
+                  children: [
+                    const Flexible(
+                        flex: 2, fit: FlexFit.tight, child: SizedBox.shrink()),
+                    Flexible(
+                      flex: 30,
+                      fit: FlexFit.tight,
+                      child: Text(LocaleKeys.enter_your_phone.tr(),
+                          style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 18.sp,
+                              color: AppColors.greyColor)),
+                    ),
+                    const Flexible(
+                        flex: 2, fit: FlexFit.tight, child: SizedBox.shrink()),
+                  ],
+                )),
+            const Flexible(fit: FlexFit.tight, child: SizedBox.shrink()),
+            Flexible(
+                flex: 10,
+                child: Row(
+                  children: [
+                    const Flexible(
+                        flex: 2, fit: FlexFit.tight, child: SizedBox.shrink()),
+                    Flexible(
+                      flex: 30,
+                      fit: FlexFit.tight,
                       child: TextFormField(
+                        autofocus: true,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                         controller: ctrl,
                         autocorrect: false,
                         enableSuggestions: false,
-                        autofocus: true,
-                        decoration: InputDecoration(
-                          isDense: true,
-                          prefixIcon: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 5.w, vertical: 1.h),
-                            width: 40.w,
-                            child: Row(
-                              children: [
-                                Container(
-                                  margin:
-                                      EdgeInsets.only(left: 0.w, right: 1.w),
-                                  width: 35.sp,
-                                  height: 27.sp,
-                                  padding: EdgeInsets.only(bottom: 0.h),
-                                  decoration: const BoxDecoration(
-                                    image: DecorationImage(
-                                      image: AssetImage(
-                                        '${imagesPath}uz_flag.png',
-                                      ),
-                                      fit: BoxFit.fitHeight,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 3.w,
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 0.h),
-                                  child: Text(
-                                    '+998',
-                                    style: TextStyle(
-                                      color: Theme.of(context)
-                                          .secondaryHeaderColor,
-                                      fontSize: 15.sp,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          prefixIconConstraints:
-                              const BoxConstraints(minWidth: 0, minHeight: 0),
-                          prefixStyle: TextStyle(
+                        style: GoogleFonts.montserrat(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18.sp,
                             color: Colors.black,
-                            fontSize: 15.sp,
+                            letterSpacing: 2),
+                        decoration: InputDecoration(
+                          prefix: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Flexible(flex: 1, fit: FlexFit.tight, child: SizedBox.shrink()),
+                              Flexible(
+                                flex: 50,
+                                fit: FlexFit.tight,
+                                child: Image.asset(
+                                  '${imagesPath}uz_flag.png',
+                                  fit: BoxFit.fitHeight,
+                                  height: availableHeight / 16,
+                                ),
+                              ),
+                              const Flexible(flex: 20, fit: FlexFit.tight, child: SizedBox.shrink()),
+                              Flexible(
+                                flex: 200,
+                                child: Text(
+                                  '+998',
+                                  style: GoogleFonts.montserrat(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 18.sp,
+                                      color: Colors.black),
+                                  textAlign: TextAlign.start,
+                                ),
+                              ),
+                              const Flexible(flex: 5, fit: FlexFit.tight, child: SizedBox.shrink()),
+                            ],
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                width: 2.w, color: AppColors.primaryColor),
+                            borderRadius: BorderRadius.circular(13.0.r),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                width: 2.w, color: AppColors.primaryColor),
+                            borderRadius: BorderRadius.circular(13.0.r),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                width: 2.w, color: AppColors.primaryColor),
+                            borderRadius: BorderRadius.circular(13.0.r),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                                width: 2, color: AppColors.primaryColor),
-                            borderRadius: BorderRadius.circular(15.0),
+                            borderSide: BorderSide(
+                                width: 2.w, color: AppColors.primaryColor),
+                            borderRadius: BorderRadius.circular(13.0.r),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                                width: 2, color: AppColors.primaryColor),
-                            borderRadius: BorderRadius.circular(15.0),
+                            borderSide: BorderSide(
+                                width: 2.w, color: AppColors.primaryColor),
+                            borderRadius: BorderRadius.circular(13.0.r),
                           ),
                           counterText: '',
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 0.w, vertical: 3.h),
                         ),
-                        cursorColor: !visible
-                            ? Theme.of(context).scaffoldBackgroundColor
-                            : Theme.of(context).secondaryHeaderColor,
-                        enableInteractiveSelection: false,
+                        cursorColor: Theme.of(context).secondaryHeaderColor,
                         maxLines: 1,
-                        enabled: true,
-                        maxLength: 14,
+                        maxLength: 9,
                         keyboardType: TextInputType.number,
-                        style: TextStyle(
-                          fontSize: 15.sp,
-                        ),
-                        onTap: () {},
-                        onEditingComplete: () async {
-                          dismissKeyboard(context);
-                          if (ctrl.text.length == 9) {
-                            setState(() {
-                              valid = true;
-                            });
-                          }
-                        },
-                        onChanged: (phone) async {
-                          if (phone.length == 9) {
-                            dismissKeyboard(context);
-                            await validate();
-                          } else {
-                            if (phone.length > 9) {
-                              await validate();
-                            }
-                          }
-                        },
                       ),
                     ),
-                  );
-                },
-              ),
-              SizedBox(
-                height: 4.h,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15.w),
-                child: PrimaryButton(
-                  onPress: () async {
-                    if (ctrl.text == '......') {
-                      // Future.delayed(const Duration(milliseconds: 200), () {
-                      //   bottomBarBloc.add(ShowBottomBar());
-                      // });
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                          LoadingPage.id, (route) => false);
-                    } else if (isNullOrBlank(ctrl.text) ||
-                        !_formKey.currentState!.validate()) {
-                      showFlutterToast(Colors.red, Colors.white,
-                          LocaleKeys.valid_phone.tr());
-                    } else if (valid) {
-                      devtools.log('+998${ctrl.text}');
-                      BlocProvider.of<AuthorizationBloc>(context)
-                          .add(Login(phoneNumber: '+998${ctrl.text}'));
-                      /*Navigator.pushNamed(
-                      context,
-                      VerifyPhoneNumberPage.id,
-                      arguments:
-                          TempPhoneArguments(phoneNumber: '+998${ctrl.text}'),
-                    );*/
-                    } else {
-                      await validate();
-                    }
-                  },
-                  color: valid ? AppColors.primaryColor : AppColors.greyColor,
-                  text: LocaleKeys.spend_code.tr(),
-                ),
-              ),
-              SizedBox(
-                height: 3.h,
-              ),
-            ],
-          ),
+                    const Flexible(
+                        flex: 2, fit: FlexFit.tight, child: SizedBox.shrink()),
+                  ],
+                )),
+            const Flexible(
+                flex: 4, fit: FlexFit.tight, child: SizedBox.shrink()),
+            Flexible(
+                flex: 7,
+                child: Row(
+                  children: [
+                    const Flexible(
+                        fit: FlexFit.tight, child: SizedBox.shrink()),
+                    Flexible(
+                        flex: 2,
+                        fit: FlexFit.tight,
+                        child: BlocBuilder<InputValidatorBloc,
+                            InputValidatorState>(
+                          builder: (context, state) {
+                            return SizedBox.expand(
+                                child: OutlinedButton(
+                              onPressed: state.isPhoneNumberValid
+                                  ? () {
+                                      BlocProvider.of<AuthorizationBloc>(
+                                              context)
+                                          .add(Login(
+                                              phoneNumber: '+998${ctrl.text}'));
+                                    }
+                                  : null,
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                        (states) {
+                                  return state.isPhoneNumberValid
+                                      ? AppColors.primaryColor
+                                      : const Color(0xff90959B);
+                                }),
+                                side:
+                                    MaterialStateProperty.resolveWith((states) {
+                                  return const BorderSide(
+                                      color: Colors.transparent, width: 0);
+                                }),
+                                shape: MaterialStateProperty.resolveWith<
+                                    OutlinedBorder>((_) {
+                                  return RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(12.r));
+                                }),
+                              ),
+                              child: Text(LocaleKeys.spend_code.tr(),
+                                  style: GoogleFonts.montserrat(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 16.sp,
+                                      color: const Color(0xffF0F0F0))),
+                            ));
+                          },
+                        )),
+                    const Flexible(
+                        fit: FlexFit.tight, child: SizedBox.shrink()),
+                  ],
+                )),
+            const Flexible(
+                flex: 50, fit: FlexFit.tight, child: SizedBox.shrink()),
+          ],
         ),
-      );
+      ));
     });
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

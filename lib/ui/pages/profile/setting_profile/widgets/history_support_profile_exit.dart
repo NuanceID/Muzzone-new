@@ -1,3 +1,4 @@
+/*
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -5,16 +6,14 @@ import 'package:firebase_phone_auth_handler/firebase_phone_auth_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get_it/get_it.dart';
 import 'package:muzzone/config/config.dart';
 import 'package:muzzone/ui/pages/profile/setting_profile/widgets/privacy_policy_page.dart';
+import 'package:muzzone/ui/pages/start_page.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../../../generated/locale_keys.g.dart';
-import '../../../../../logic/blocs/bottom_bar/bottom_bar_bloc.dart';
 import '../../../../widgets/widgets.dart';
-import '../../../player_page/bloc/audio_bloc.dart';
-import '../../../splash_page.dart';
+import '../../../../../logic/blocs/audio/audio_bloc.dart';
 import '../blocs/support_bloc.dart';
 import '../blocs/track_history_bloc.dart';
 
@@ -27,11 +26,9 @@ class PrivacySupportProfileExit extends StatefulWidget {
 }
 
 class _PrivacySupportProfileExitState extends State<PrivacySupportProfileExit> {
-  final trackHistoryBloc = GetIt.I.get<TrackHistoryBloc>();
-
-  final supportBloc = GetIt.I.get<SupportBloc>();
-  final bottomBarBloc = GetIt.I.get<BottomBarBloc>();
-  final audioBloc = GetIt.I.get<AudioBloc>();
+  late final TrackHistoryBloc trackHistoryBloc;
+  late final SupportBloc supportBloc;
+  late final AudioBloc audioBloc;
 
   final List<Map> myHistoryList = List.generate(
       5,
@@ -42,21 +39,24 @@ class _PrivacySupportProfileExitState extends State<PrivacySupportProfileExit> {
           });
 
   Future<void> firstAsyncFunction() async {
-    // выполнение первой асинхронной функции
     await FirebasePhoneAuthHandler.signOut(context);
   }
 
   Future<void> secondAsyncFunction() async {
-    await firstAsyncFunction(); // ожидание выполнения первой функции
-    // выполнение второй асинхронной функции
-    audioBloc.add(CloseAllForExitProfile());
-    await Navigator.of(context)
-        .pushNamedAndRemoveUntil(SplashPage.id, (route) => false);
+    await firstAsyncFunction();
     con.player.stop();
+    if(mounted) {
+      await Navigator.of(context)
+          .pushNamedAndRemoveUntil(StartPage.id, (route) => false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    trackHistoryBloc = context.read<TrackHistoryBloc>();
+    supportBloc = context.read<SupportBloc>();
+    audioBloc = context.read<AudioBloc>();
+
     return BlocBuilder<TrackHistoryBloc, TrackHistoryState>(
       builder: (context, state) {
         return BlocBuilder<SupportBloc, SupportState>(
@@ -261,3 +261,4 @@ class HistorySupportTile extends StatelessWidget {
     );
   }
 }
+*/

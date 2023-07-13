@@ -107,7 +107,8 @@ class CodegenLoader extends AssetLoader{
   "validation_status": "Статус проверки:",
   "valid": "Верный",
   "invalid": "Неверный",
-  "no_content": "Нет контента"
+  "no_content": "Нет контента",
+  "repeat_tap_to_exit": "Нажмите кнопку \"Назад\" еще раз, чтобы выйти"
 };
 static const Map<String,dynamic> uz = {
   "button_start": "Boshlanishi",
@@ -202,7 +203,8 @@ static const Map<String,dynamic> uz = {
   "validation_status": "Tasdiqlash holati: ",
   "valid": "Toʻgʻri",
   "invalid": "Noto'g'ri",
-  "no_content": "Tarkib yo'q"
+  "no_content": "Tarkib yo'q",
+  "repeat_tap_to_exit": "Chiqish uchun yana \"Orqaga\" tugmasini bosing"
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"ru": ru, "uz": uz};
 }

@@ -13,6 +13,8 @@ class LoadingImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
+      height: double.infinity,
       color: Colors.grey.shade800,
       child: icon ??
           Icon(

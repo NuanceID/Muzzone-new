@@ -7,14 +7,12 @@ export 'buttons/write_us_button.dart';
 //common_widgets
 export 'common_widgets/animated_controller.dart';
 export 'common_widgets/bottom_offset.dart';
-export 'common_widgets/custom_loader.dart';
 export 'common_widgets/image_widget.dart';
 export 'common_widgets/loading_image.dart';
 export 'common_widgets/name_phone_text_form_field.dart';
 export 'common_widgets/pin_input_field.dart';
 export 'common_widgets/swipe_detector.dart';
 export 'layout_widgets/audio_row.dart';
-export 'layout_widgets/bottom_bar.dart';
 export 'layout_widgets/header_title.dart';
 //layout_widgets
 export 'layout_widgets/layout.dart';

@@ -1,5 +1,6 @@
+/*
 import 'package:flutter/material.dart';
-import 'package:muzzone/data/data.dart';
+import 'package:muzzone/data/models/playlist.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../../config/config.dart';
@@ -104,3 +105,4 @@ class _MySearchStringState extends State<MySearchString> {
     );
   }
 }
+*/

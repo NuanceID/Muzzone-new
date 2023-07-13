@@ -1,13 +1,12 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'track_history_event.dart';
 part 'track_history_state.dart';
 
 class TrackHistoryBloc extends Bloc<TrackHistoryEvent, TrackHistoryState> {
-  TrackHistoryBloc() : super(TrackHistoryInitial(isOpen: false)) {
+  TrackHistoryBloc() : super(TrackHistoryState()) {
     on<TrackHistoryEvent>((event, emit) {});
     on<OpenTrackHistoryEvent>(_onOpenTrackHistory);
     on<CloseTrackHistoryEvent>(_onCloseTrackHistory);

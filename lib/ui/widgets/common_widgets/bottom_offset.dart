@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sizer/sizer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:muzzone/logic/blocs/audio/audio_state.dart';
 
 import '../../../config/config.dart';
-import '../../pages/player_page/bloc/audio_bloc.dart';
+import '../../../logic/blocs/audio/audio_bloc.dart';
 
 class BottomOffset extends StatelessWidget {
   const BottomOffset({Key? key, this.needAnotherHeight = false})

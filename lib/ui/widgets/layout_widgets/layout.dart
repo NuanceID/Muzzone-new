@@ -3,10 +3,8 @@ import 'package:muzzone/ui/widgets/widgets.dart';
 
 class Layout extends StatelessWidget {
   final Widget? child;
-  final GlobalKey<NavigatorState> kNavigatorKey;
 
-  const Layout({Key? key, required this.child, required this.kNavigatorKey})
-      : super(key: key);
+  const Layout({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -15,31 +13,14 @@ class Layout extends StatelessWidget {
         overscroll.disallowIndicator();
         return false;
       },
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: SafeArea(
-          top: false,
-          bottom: false,
-          child: Container(
-            padding:
-                EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
-            child: Stack(
-              children: [
-                MySlidingUpPanel(
-                    kNavigatorKey: kNavigatorKey, child: child ?? Container())
-              ],
-            ),
-          ),
-        ),
-        floatingActionButton: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: const [
-            BottomBar(),
-          ],
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      child: SafeArea(
+        child: Scaffold(
+            backgroundColor: Colors.white,
+            resizeToAvoidBottomInset: false,
+            extendBody: false,
+            body: MySlidingUpPanel(
+              child: child ?? const SizedBox.shrink(),
+            ),),
       ),
     );
   }

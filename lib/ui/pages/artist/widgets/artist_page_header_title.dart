@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../widgets/widgets.dart';
 
@@ -16,7 +16,7 @@ class ArtistPageHeaderTitle extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 40.h,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         image: DecorationImage(
           image: NetworkImage(
               'https://uhd.name/uploads/posts/2020-09/thumbs/1600716792_25-p-yulduz-usmanova-120.jpg'),

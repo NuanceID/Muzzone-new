@@ -1,14 +1,15 @@
+/*
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:muzzone/ui/controllers/controllers.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:muzzone/logic/blocs/audio/audio_event.dart';
 import 'package:muzzone/ui/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../player_page/bloc/audio_bloc.dart';
+import '../../../../logic/blocs/audio/audio_bloc.dart';
 
 class MyMusicSongsItem extends StatelessWidget {
-  MyMusicSongsItem({
+  const MyMusicSongsItem({
     Key? key,
     this.audios,
     required this.title,
@@ -21,11 +22,10 @@ class MyMusicSongsItem extends StatelessWidget {
   final String fromPage;
   final Function() onPressShowAll;
 
-  final con = GetIt.I.get<MainController>();
-  final audioBloc = GetIt.I.get<AudioBloc>();
-
   @override
   Widget build(BuildContext context) {
+    final audioBloc = context.read<AudioBloc>();
+
     return Column(
       children: [
         SizedBox(
@@ -44,23 +44,22 @@ class MyMusicSongsItem extends StatelessWidget {
           for (var i = 0; i < audios!.length; i++)
             AudioRow(
               audio: audios![i],
-              height: 10.h,
               onPress: () {
                 con.playSong(audios!, i);
-                audioBloc.add(StartPlaying(audios!));
+                audioBloc.add(Play(audios!));
               },
             )
         else
           for (var i = 0; i < 3; i++)
             AudioRow(
               audio: audios![i],
-              height: 10.h,
               onPress: () {
                 con.playSong(audios!, i);
-                audioBloc.add(StartPlaying(audios!));
+                audioBloc.add(Play(audios!));
               },
             ),
       ],
     );
   }
 }
+*/

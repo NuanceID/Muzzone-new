@@ -15,3 +15,6 @@ const List<String> icons = [
   '${iconsPath}search.svg',
   '${iconsPath}my_music.svg'
 ];
+
+late double availableWidth;
+late double availableHeight;

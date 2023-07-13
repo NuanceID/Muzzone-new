@@ -1,10 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:muzzone/config/config.dart';
 import 'package:muzzone/ui/pages/artist/widgets/artist_page_header_title.dart';
 import 'package:muzzone/ui/pages/artist/widgets/page_view_artist_page.dart';
 import 'package:muzzone/ui/widgets/widgets.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../../../generated/locale_keys.g.dart';
 import '../../show_all_page/show_all_page.dart';
@@ -40,16 +40,16 @@ class _ArtistPageState extends State<ArtistPage> {
   @override
   Widget build(BuildContext context) {
     final args =
-        ModalRoute.of(context)!.settings.arguments as ArtistPageArguments;
+    ModalRoute.of(context)!.settings.arguments as ArtistPageArguments;
 
-    return PageLayout(
+    return Column(
       children: [
         ArtistPageHeaderTitle(
           image: '$imagesPath${args.artist.cover}.jpg',
           name: args.artist.name,
         ),
         SizedBox(
-          height: 4.h,
+          height: 14.h,
         ),
         TitleWithButtonShowAll(
           fromPage: 'artist_page',
@@ -58,13 +58,13 @@ class _ArtistPageState extends State<ArtistPage> {
           onPress: () {
             Navigator.of(context).pushNamed(ShowAllPage.id,
                 arguments: ShowAllPageArguments(
-                    //item: args.artist.audio,
+                  //item: args.artist.audio,
                     title: LocaleKeys.popular.tr(),
                     fromPage: 'artist_page'));
           },
         ),
         SizedBox(
-          height: 2.h,
+          height: 12.h,
         ),
         PageViewArtistPage(
           pageController: _popularMusicController,
@@ -78,7 +78,7 @@ class _ArtistPageState extends State<ArtistPage> {
           onPress: () {
             Navigator.of(context).pushNamed(ShowAllPage.id,
                 arguments: ShowAllPageArguments(
-                    //item: args.artist.albums,
+                  //item: args.artist.albums,
                     title: LocaleKeys.popular.tr(),
                     fromPage: 'artist_page'));
           },

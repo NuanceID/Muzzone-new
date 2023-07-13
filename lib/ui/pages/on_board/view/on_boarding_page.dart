@@ -1,15 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:muzzone/config/config.dart';
-import 'package:muzzone/data/data.dart';
+import 'package:muzzone/data/local_data_store/local_data_store.dart';
 import 'package:muzzone/generated/locale_keys.g.dart';
-import 'package:muzzone/ui/pages/player_page/bloc/audio_bloc.dart';
+import 'package:muzzone/logic/blocs/audio/audio_bloc.dart';
 import 'package:muzzone/ui/widgets/widgets.dart';
-import 'package:sizer/sizer.dart';
 
-import '../../../../logic/blocs/bottom_bar/bottom_bar_bloc.dart';
 import '../../../../logic/blocs/on_boarding/on_board_bloc.dart';
 import '../../main_page/view/main_page.dart';
 import 'first_onboard.dart';
@@ -26,11 +24,12 @@ class OnBoardingPage extends StatefulWidget {
 }
 
 class _OnBoardingPageState extends State<OnBoardingPage> {
-  final onboardBloc = GetIt.I.get<OnBoardBloc>();
+
+  late OnBoardBloc onboardBloc;
+  late AudioBloc audioBloc;
+
   final PageController _pageController = PageController(initialPage: 0);
   final LocalDataStore _store = LocalDataStore();
-  final bottomBarBloc = GetIt.I.get<BottomBarBloc>();
-  final audioBloc = GetIt.I.get<AudioBloc>();
 
   Future<void> _onPageChanged(index) async {
     if (index == 0) {
@@ -47,9 +46,6 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
         duration: const Duration(milliseconds: 300), curve: Curves.linear);
     if (currentPage == 2) {
       _store.setNeedOnboard(false);
-      bottomBarBloc.add(ShowBottomBar());
-      audioBloc.add(ShowMinHeight());
-      audioBloc.add(OpenController());
       Navigator.of(context)
           .pushNamedAndRemoveUntil(MainPage.id, (route) => false);
     }
@@ -62,6 +58,9 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
 
   @override
   Widget build(BuildContext context) {
+    onboardBloc = context.read<OnBoardBloc>();
+    audioBloc = context.read<AudioBloc>();
+
     return Scaffold(
       body: SafeArea(
         top: true,

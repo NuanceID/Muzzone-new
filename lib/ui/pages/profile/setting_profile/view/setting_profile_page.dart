@@ -1,16 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:muzzone/config/config.dart';
 import 'package:muzzone/ui/pages/profile/setting_profile/blocs/track_history_bloc.dart';
 import 'package:muzzone/ui/pages/profile/setting_profile/widgets/choose_theme_app.dart';
-import 'package:muzzone/ui/pages/profile/setting_profile/widgets/history_support_profile_exit.dart';
 import 'package:muzzone/ui/pages/profile/setting_profile/widgets/language_setting.dart';
 import 'package:muzzone/ui/pages/profile/setting_profile/widgets/name_phone_photo.dart';
 import 'package:muzzone/ui/widgets/layout_widgets/header_title.dart';
-import 'package:muzzone/ui/widgets/layout_widgets/page_layout.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../../../../generated/locale_keys.g.dart';
 import '../blocs/support_bloc.dart';
@@ -19,14 +16,9 @@ import '../edit_profile_page/view/edit_profile_page.dart';
 class SettingProfilePage extends StatelessWidget {
   static const id = 'SettingProfilePage';
 
-  SettingProfilePage({Key? key}) : super(key: key);
-
-  final trackHistoryBloc = GetIt.I.get<TrackHistoryBloc>();
-  final supportBloc = GetIt.I.get<SupportBloc>();
+  const SettingProfilePage({Key? key}) : super(key: key);
 
   Future<bool> _closeDropButtonsAndPop(BuildContext context, willPopScore) {
-    trackHistoryBloc.add(CloseTrackHistoryEvent());
-    supportBloc.add(CloseSupportEvent());
     if (willPopScore) {
       return Future.value(true);
     } else {
@@ -50,23 +42,26 @@ class SettingProfilePage extends StatelessWidget {
                 onWillPop: () => _closeDropButtonsAndPop(context, true),
                 child: GestureDetector(
                   onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-                  child: PageLayout(
-                    children: [
-                      HeaderTitle(
-                        onPress: () => _closeDropButtonsAndPop(context, false),
-                        title: LocaleKeys.profile_setting.tr(),
-                        icon: 'setting',
-                        iconPress: () =>
-                            Navigator.of(context).pushNamed(EditProfilePage.id),
-                      ),
-                      NamePhonePhoto(),
-                      SettingProfileMyDivider(),
-                      ChooseThemeApp(),
-                      SettingProfileMyDivider(),
-                      LanguageSetting(),
-                      SettingProfileMyDivider(),
-                      PrivacySupportProfileExit(),
-                    ],
+                  child: Container(
+                    color: Colors.white,
+                    child: Column(
+                      children: [
+                        HeaderTitle(
+                          onPress: () => _closeDropButtonsAndPop(context, false),
+                          title: LocaleKeys.profile_setting.tr(),
+                          icon: 'setting',
+                          iconPress: () =>
+                              Navigator.of(context).pushNamed(EditProfilePage.id),
+                        ),
+                        const NamePhonePhoto(),
+                        const SettingProfileMyDivider(),
+                        const ChooseThemeApp(),
+                        const SettingProfileMyDivider(),
+                        const LanguageSetting(),
+                        const SettingProfileMyDivider(),
+                        //const PrivacySupportProfileExit(),
+                      ],
+                    )
                   ),
                 ),
               );

@@ -1,13 +1,15 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:muzzone/config/config.dart';
-import 'package:muzzone/data/data.dart';
+import 'package:muzzone/data/models/playlist.dart';
 import 'package:muzzone/data/repositories/remote_repositories/backend_repository.dart';
 import 'package:muzzone/generated/locale_keys.g.dart';
+import 'package:muzzone/logic/blocs/audio/audio_bloc.dart';
+import 'package:muzzone/logic/blocs/audio/audio_event.dart';
 import 'package:muzzone/logic/blocs/genres/genres_bloc.dart';
 import 'package:muzzone/logic/blocs/genres/genres_event.dart';
 import 'package:muzzone/logic/blocs/genres/genres_state.dart';
@@ -15,10 +17,6 @@ import 'package:muzzone/logic/blocs/playlists/playlists_bloc.dart';
 import 'package:muzzone/logic/blocs/playlists/playlists_event.dart';
 import 'package:muzzone/logic/blocs/playlists/playlists_state.dart';
 import 'package:muzzone/ui/widgets/widgets.dart';
-import 'package:sizer/sizer.dart';
-
-import '../../../controllers/main_controller.dart';
-import '../../player_page/bloc/audio_bloc.dart';
 
 class AlbumPage extends StatelessWidget {
   const AlbumPage({Key? key}) : super(key: key);
@@ -27,26 +25,28 @@ class AlbumPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<AudioBloc>(context).add(ClearPlaylist());
+
     late Bloc bloc;
 
-    final PagingController<int, Track> pagingController =
-        PagingController<int, Track>(firstPageKey: 1);
+    final PagingController<int, MediaItem> pagingController =
+        PagingController<int, MediaItem>(firstPageKey: 1);
 
     final initArgs =
         ModalRoute.of(context)!.settings.arguments as AlbumPageArguments;
 
     if (initArgs.item is MyPlaylist) {
       if ((initArgs.item as MyPlaylist).isGenre) {
-        bloc = GenresBloc(backendRepository: GetIt.I.get<BackendRepository>());
+        bloc = GenresBloc(backendRepository: context.read<BackendRepository>());
       }
       if ((initArgs.item as MyPlaylist).isBackendPlaylist) {
         bloc =
-            PlaylistsBloc(backendRepository: GetIt.I.get<BackendRepository>());
+            PlaylistsBloc(backendRepository: context.read<BackendRepository>());
       }
     }
 
     if (initArgs.item is! MyPlaylist) {
-      bloc = GenresBloc(backendRepository: GetIt.I.get<BackendRepository>());
+      bloc = GenresBloc(backendRepository: context.read<BackendRepository>());
     }
 
     return initArgs.item is MyPlaylist
@@ -68,24 +68,21 @@ class AlbumPage extends StatelessWidget {
                         bloc: bloc as GenresBloc,
                         listener: (context, state) {
                           if (state.genreStatus == GenresStatus.success) {
-                            con.audios = state.genre.tracks
-                                .map((e) => Audio.network(
-                                      e.file,
-                                      metas: Metas(
-                                        id: e.id.toString(),
-                                        title: e.name,
-                                        artist: e.name,
-                                        album: e.name,
-                                        extra: {
-                                          'isPopular': false,
-                                          'isNew': false,
-                                        },
-                                        image: MetasImage.network(e.cover),
-                                      ),
-                                    ))
-                                .toList();
 
-                            pagingController.appendLastPage(state.tracksList);
+                            var playlist = state.genre.tracks
+                                .map((e) => MediaItem(
+                              id: e.file,
+                              title: e.name,
+                              album: e.album.name,
+                              artist: e.artists.map((element) => element.name).toList().join(', '),
+                              artUri: Uri.parse(e.cover),
+
+                            )).toList();
+
+                            BlocProvider.of<AudioBloc>(context).add(SetPlaylist(
+                                playlist: playlist));
+
+                            pagingController.appendLastPage(playlist);
 
                             /*if (state.hasReached) {
                           pagingController.appendLastPage(state.genresList);
@@ -105,24 +102,21 @@ class AlbumPage extends StatelessWidget {
                         bloc: bloc as PlaylistsBloc,
                         listener: (context, state) {
                           if (state.playlistStatus == PlaylistsStatus.success) {
-                            con.audios = state.backendPlaylist.tracks
-                                .map((e) => Audio.network(
-                                      e.file,
-                                      metas: Metas(
-                                        id: e.id.toString(),
-                                        title: e.name,
-                                        artist: e.name,
-                                        album: e.name,
-                                        extra: {
-                                          'isPopular': false,
-                                          'isNew': false,
-                                        },
-                                        image: MetasImage.network(e.cover),
-                                      ),
-                                    ))
-                                .toList();
 
-                            pagingController.appendLastPage(state.tracksList);
+                            var playlist = state.backendPlaylist.tracks
+                                .map((e) => MediaItem(
+                              id: e.file,
+                              title: e.name,
+                              album: e.album.name,
+                              artist: e.artists.map((element) => element.name).toList().join(', '),
+                              artUri: Uri.parse(e.cover),
+
+                            )).toList();
+
+                            BlocProvider.of<AudioBloc>(context)
+                                .add(SetPlaylist(playlist: playlist));
+
+                            pagingController.appendLastPage(playlist);
 
                             /*if (state.hasReached) {
                           pagingController.appendLastPage(state.list);
@@ -152,14 +146,13 @@ class AlbumPage extends StatelessWidget {
 
 class _AlbumPage extends StatefulWidget {
   const _AlbumPage({
-    super.key,
     required this.bloc,
     required this.pagingController,
     required this.myPlaylist,
   });
 
   final Bloc bloc;
-  final PagingController<int, Track> pagingController;
+  final PagingController<int, MediaItem> pagingController;
   final MyPlaylist myPlaylist;
 
   @override
@@ -167,10 +160,6 @@ class _AlbumPage extends StatefulWidget {
 }
 
 class _AlbumPageState extends State<_AlbumPage> {
-  final MainController con = GetIt.I.get<MainController>();
-  final audioBloc = GetIt.I.get<AudioBloc>();
-
-
   @override
   void initState() {
     widget.pagingController.addPageRequestListener((pageKey) {
@@ -191,7 +180,7 @@ class _AlbumPageState extends State<_AlbumPage> {
         ModalRoute.of(context)!.settings.arguments as AlbumPageArguments;
 
     return args.item is MyPlaylist
-        ? PageLayout(
+        ? Column(
             children: [
               HeaderTitle(
                 title: (args.item as MyPlaylist).title,
@@ -200,57 +189,43 @@ class _AlbumPageState extends State<_AlbumPage> {
                   height: 500,
                   child: CustomScrollView(
                     slivers: [
-                      PagedSliverList<int, Track>(
+                      PagedSliverList<int, MediaItem>(
                         pagingController: widget.pagingController,
-                        builderDelegate: PagedChildBuilderDelegate<Track>(
+                        builderDelegate: PagedChildBuilderDelegate<MediaItem>(
                             noItemsFoundIndicatorBuilder: (_) => Center(
-                                child: Text(
+                                    child: Text(
                                   LocaleKeys.no_content.tr(),
                                   style: TextStyle(
-                                    fontSize: 12.sp,
+                                    fontSize: 20.sp,
                                     fontWeight: FontWeight.bold,
                                     color: AppColors.primaryColor,
                                   ),
                                 )),
                             firstPageErrorIndicatorBuilder: (_) => Center(
-                                child: Text(
+                                    child: Text(
                                   LocaleKeys.something_went_wrong.tr(),
                                   style: TextStyle(
-                                    fontSize: 12.sp,
+                                    fontSize: 20.sp,
                                     fontWeight: FontWeight.bold,
                                     color: AppColors.primaryColor,
                                   ),
                                 )),
                             newPageErrorIndicatorBuilder: (_) => Center(
-                                child: Text(
+                                    child: Text(
                                   LocaleKeys.something_went_wrong.tr(),
                                   style: TextStyle(
-                                    fontSize: 12.sp,
+                                    fontSize: 20.sp,
                                     fontWeight: FontWeight.bold,
                                     color: AppColors.primaryColor,
                                   ),
                                 )),
                             itemBuilder: (context, item, index) => AudioRow(
-                              height: 7.h,
-                              audio: Audio.network(
-                                item.file,
-                                metas: Metas(
-                                  id: item.id.toString(),
-                                  title: item.name,
-                                  artist: item.name,
-                                  album: item.name,
-                                  extra: {
-                                    'isPopular': false,
-                                    'isNew': false,
+                                  audio: item,
+                                  onPress: () {
+                                    BlocProvider.of<AudioBloc>(context).add(OpenMiniPlayer());
+                                    context.read<AudioBloc>().add(Play(audioPath: item.id));
                                   },
-                                  image: MetasImage.network(item.cover),
-                                ),
-                              ),
-                              onPress: () {
-                                con.playSong(con.audios, index);
-                                audioBloc.add(StartPlaying(con.audios));
-                              },
-                            )),
+                                )),
                       )
                     ],
                   ))
@@ -379,10 +354,10 @@ class _AlbumPageState extends State<_AlbumPage> {
             ],
           )
         : args.album != null
-            ? PageLayout(
+            ? Column(
                 children: [
                   HeaderTitle(
-                    title: args.album![0].metas.album,
+                    title: args.album![0].album,
                   ),
                   ListView.builder(
                     padding: EdgeInsets.only(top: 3.h),
@@ -390,12 +365,12 @@ class _AlbumPageState extends State<_AlbumPage> {
                     physics: const ScrollPhysics(),
                     itemCount: args.album!.length,
                     itemBuilder: (context, index) => AudioRow(
-                        audio: args.album![index],
-                        onPress: () {
-                          con.playSong(con.audios, index);
-                          audioBloc.add(StartPlaying(con.audios));
-                        },
-                        height: 7.h),
+                      audio: args.album![index],
+                      onPress: () {
+                        BlocProvider.of<AudioBloc>(context).add(OpenMiniPlayer());
+                        context.read<AudioBloc>().add(Play(audioPath: args.album![index].id));
+                      },
+                    ),
                   ),
                 ],
               )

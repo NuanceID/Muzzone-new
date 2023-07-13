@@ -1,9 +1,10 @@
+/*
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:muzzone/config/config.dart';
-import 'package:muzzone/data/data.dart';
+import 'package:muzzone/data/models/playlist.dart';
 import 'package:muzzone/ui/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
 
@@ -29,7 +30,7 @@ class _SearchPageState extends State<SearchPage> {
       if (query.isNotEmpty) {
         filteredProducts = LocalPlaylistsRepository.localPlaylists
             .where((product) =>
-                product.title.toLowerCase().contains(query.toLowerCase()))
+            product.title.toLowerCase().contains(query.toLowerCase()))
             .toList();
       } else {
         filteredProducts = List.from(LocalPlaylistsRepository.localPlaylists);
@@ -45,8 +46,7 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PageLayout(
-      needAnotherBottomHeight: true,
+    return Column(
       children: [
         Padding(
           padding: EdgeInsets.symmetric(
@@ -67,7 +67,7 @@ class _SearchPageState extends State<SearchPage> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20.0),
                 borderSide:
-                    const BorderSide(color: AppColors.primaryColor, width: 2.0),
+                const BorderSide(color: AppColors.primaryColor, width: 2.0),
               ),
               prefixIcon: Container(
                 margin: EdgeInsets.all(2.5.h),
@@ -106,3 +106,4 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 }
+*/

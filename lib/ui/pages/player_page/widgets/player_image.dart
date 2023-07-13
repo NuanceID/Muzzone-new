@@ -1,8 +1,7 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
-
-import '../../../widgets/common_widgets/loading_image.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:muzzone/config/style/style.dart';
 
 class PlayerImage extends StatelessWidget {
   const PlayerImage({
@@ -10,30 +9,30 @@ class PlayerImage extends StatelessWidget {
     required this.myAudio,
   }) : super(key: key);
 
-  final Audio myAudio;
+  final MediaItem myAudio;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 16.w),
-        height: 38.h,
-        width: double.maxFinite,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: Image.network(
-            myAudio.metas.image!.path,
-            fit: BoxFit.cover,
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return LoadingImage(
-                size: 15.h,
-              );
-            },
-          ),
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20.r),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20.r),
+        child: Image.network(
+          myAudio.artUri?.path ?? '',
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.primaryColor,)
+            );
+          },
+          /*loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return const LoadingImage();
+          },*/
         ),
       ),
     );

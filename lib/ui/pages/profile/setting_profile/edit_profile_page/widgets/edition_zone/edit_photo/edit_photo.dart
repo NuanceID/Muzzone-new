@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../../../../config/style/style.dart';
 import '../../../../../../../../generated/locale_keys.g.dart';
@@ -15,7 +14,7 @@ class EditPhoto extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ImageWidget(
+        const ImageWidget(
           icon: Icons.add_photo_alternate,
           needFunction: true,
           needBorder: true,
@@ -25,7 +24,7 @@ class EditPhoto extends StatelessWidget {
         ),
         Text(
           LocaleKeys.change_photo.tr(),
-          style: TextStyle(
+          style: const TextStyle(
             color: AppColors.greyColor,
           ),
         ),

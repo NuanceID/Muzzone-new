@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:muzzone/data/data.dart';
 import 'package:muzzone/data/models/genre.dart';
+import 'package:muzzone/data/models/playlist.dart';
+import 'package:muzzone/data/models/track.dart';
 
 enum GenresStatus { initial, success, failure, loading }
 

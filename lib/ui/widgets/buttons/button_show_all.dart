@@ -1,7 +1,8 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:muzzone/config/config.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../../generated/locale_keys.g.dart';
 
@@ -21,24 +22,37 @@ class ButtonShowAll extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(5.r),
       onTap: onPress,
-      child: Container(
+      child: Ink(
         decoration: BoxDecoration(
           color: AppColors.primaryColor,
-          borderRadius: BorderRadius.circular(7),
+          borderRadius: BorderRadius.circular(5.r),
         ),
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.h),
-            child: Text(
-              LocaleKeys.show_all.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(fontSize: 10.sp),
-            ),
-          ),
+        child: Row(
+          children: [
+            const Flexible(fit: FlexFit.tight, child: SizedBox.shrink()),
+            Flexible(
+                flex: 12,
+                fit: FlexFit.tight,
+                child: SizedBox(
+                  height: availableHeight/22,
+                  child: Center(
+                    child: AutoSizeText(
+                      LocaleKeys.show_all.tr(),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall!
+                          .copyWith(fontSize: 14.sp),
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                    )
+                  )
+                )),
+            const Flexible(fit: FlexFit.tight, child: SizedBox.shrink())
+          ],
         ),
       ),
     );

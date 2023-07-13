@@ -1,12 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get_it/get_it.dart';
 import 'package:muzzone/config/config.dart';
-import 'package:sizer/sizer.dart';
+import 'package:muzzone/data/local_data_store/local_data_store.dart';
 
-import '../../../../../data/data.dart';
 import '../../../../../generated/locale_keys.g.dart';
 import '../../../../../logic/cubits/theme_cubit.dart';
 
@@ -18,11 +17,13 @@ class ChooseThemeApp extends StatefulWidget {
 }
 
 class _ChooseThemeAppState extends State<ChooseThemeApp> {
-  final themeCubit = GetIt.I.get<ThemeCubit>();
+
   final LocalDataStore _store = LocalDataStore();
 
   @override
   Widget build(BuildContext context) {
+    final themeCubit = context.read<ThemeCubit>();
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 7.w),
       child: BlocBuilder<ThemeCubit, ThemeData>(

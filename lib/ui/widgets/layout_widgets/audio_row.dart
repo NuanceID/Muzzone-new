@@ -1,8 +1,9 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:muzzone/config/constants/constants.dart';
 import 'package:muzzone/ui/widgets/buttons/three_dots_button.dart';
-import 'package:sizer/sizer.dart';
 
 import '../../../config/style/style.dart';
 import '../common_widgets/loading_image.dart';
@@ -12,103 +13,116 @@ class AudioRow extends StatelessWidget {
     Key? key,
     required this.audio,
     required this.onPress,
-    required this.height,
     this.paddingLeft,
   }) : super(key: key);
 
-  final Audio audio;
+  final MediaItem audio;
   final Function() onPress;
-  final double height;
   final double? paddingLeft;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding:
-          EdgeInsets.only(left: paddingLeft ?? 7.w, right: 7.w, bottom: 2.h),
-      child: GestureDetector(
-        onTap: onPress,
-        child: AudioListTile(
-          audio: audio,
-          height: height,
-        ),
+    return GestureDetector(
+      onTap: onPress,
+      child: AudioListTile(
+        audio: audio,
       ),
     );
   }
 }
 
 class AudioListTile extends StatelessWidget {
-  const AudioListTile({Key? key, required this.audio, required this.height})
-      : super(key: key);
+  const AudioListTile({Key? key, required this.audio}) : super(key: key);
 
-  final Audio audio;
-  final double height;
+  final MediaItem audio;
 
   @override
   Widget build(BuildContext context) {
+
     return SizedBox(
-      width: 100.w,
-      height: height,
-      child: Card(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        margin: EdgeInsets.zero,
-        child: Row(
-          children: [
-            Flexible(
-                flex: 20,
-                child: _AudioRowImage(
-                  audio: audio,
-                  height: height,
-                )),
-            Flexible(
-              flex: 100,
-              fit: FlexFit.tight,
-              child: _AudioRowText(
-                audio: audio,
-              ),
-            ),
-            const Flexible(
-              flex: 5,
-              fit: FlexFit.tight,
-              child: SizedBox.shrink(),
-            ),
-            Flexible(
-                flex: 10,
-                fit: FlexFit.tight,
-                child: ThreeDotsButton(
-                  fromPage: 'main_page',
-                  audio: audio,
-                ))
-          ],
-        ),
+      width: double.infinity,
+      height: availableHeight/12 + availableHeight/80,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+              flex: 6,
+              child: Row(
+                children: [
+                  Flexible(
+                    fit: FlexFit.tight,
+                    child: Container(),
+                  ),
+                  Flexible(
+                    flex: 14,
+                    fit: FlexFit.tight,
+                    child: Card(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      elevation: 0,
+                      margin: EdgeInsets.zero,
+                      child: Row(
+                        children: [
+                          Flexible(
+                              flex: 8,
+                              child: _AudioRowImage(
+                                audio: audio,
+                              )),
+                          const Flexible(
+                            fit: FlexFit.tight,
+                            child: SizedBox.shrink(),
+                          ),
+                          Flexible(
+                            flex: 32,
+                            fit: FlexFit.tight,
+                            child: _AudioRowText(
+                              audio: audio,
+                            ),
+                          ),
+                          const Flexible(
+                            fit: FlexFit.tight,
+                            child: SizedBox.shrink(),
+                          ),
+                          Flexible(
+                              flex: 4,
+                              fit: FlexFit.tight,
+                              child: ThreeDotsButton(
+                                fromPage: 'main_page',
+                                audio: audio,
+                              )),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              )),
+          Flexible(child: SizedBox(
+            height: availableHeight/80,
+          )),
+        ],
       ),
     );
   }
 }
 
 class _AudioRowImage extends StatelessWidget {
-  const _AudioRowImage({Key? key, required this.audio, required this.height})
-      : super(key: key);
+  const _AudioRowImage({Key? key, required this.audio}) : super(key: key);
 
-  final Audio audio;
-  final double height;
+  final MediaItem audio;
 
   @override
   Widget build(BuildContext context) {
+
     return SizedBox(
-      height: height,
-      width: height,
+      height: availableHeight / 14,
+      width: availableHeight / 14,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
-        child: CachedNetworkImage(imageUrl: audio.metas.image?.path ?? '', fit: BoxFit.cover,
+        child: CachedNetworkImage(
+            imageUrl: audio.artUri?.path ?? '',
+            fit: BoxFit.cover,
             progressIndicatorBuilder: (context, url, loadingProgress) {
               return const LoadingImage();
-            }),/*Image.network(audio.metas.image?.path ?? '', fit: BoxFit.cover,
-            loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return const LoadingImage();
-        }),*/
+            }),
       ),
     );
   }
@@ -117,33 +131,42 @@ class _AudioRowImage extends StatelessWidget {
 class _AudioRowText extends StatelessWidget {
   const _AudioRowText({Key? key, required this.audio}) : super(key: key);
 
-  final Audio audio;
+  final MediaItem audio;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(left: 3.w),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            audio.metas.title!,
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Flexible(
+          child: Text(
+            audio.title,
+            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            textAlign: TextAlign.start,
+          ),
+        ),
+        Flexible(
+          child: SizedBox(
+            height: availableHeight / 70,
+          ),
+        ),
+        Flexible(
+          child: Text(
+            audio.artist ?? '',
             style: TextStyle(
-              fontSize: audio.metas.title!.length > 22 ? 10.sp : 12.sp,
-            ),
+                color: AppColors.greyColor,
+                fontSize: 15.sp,
+                fontWeight: FontWeight.w500),
+            overflow: TextOverflow.ellipsis,
             maxLines: 1,
+            textAlign: TextAlign.start,
           ),
-          SizedBox(
-            height: 1.h,
-          ),
-          Text(
-            audio.metas.artist!,
-            style: TextStyle(color: AppColors.greyColor, fontSize: 10.sp),
-            maxLines: 1,
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

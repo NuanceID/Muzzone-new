@@ -1,6 +1,5 @@
 part of 'on_board_bloc.dart';
 
-@immutable
 abstract class OnBoardEvent {}
 
 class OnboardChangeEvent extends OnBoardEvent {

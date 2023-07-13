@@ -94,4 +94,5 @@ abstract class  LocaleKeys {
   static const valid = 'valid';
   static const invalid = 'invalid';
   static const no_content = 'no_content';
+  static const repeat_tap_to_exit = 'repeat_tap_to_exit';
 }
