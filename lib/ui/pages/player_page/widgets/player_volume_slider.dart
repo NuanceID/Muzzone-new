@@ -12,17 +12,14 @@ class PlayerVolumeSlider extends StatefulWidget {
 }
 
 class _PlayerVolumeSliderState extends State<PlayerVolumeSlider> {
-  double _volumeListenerValue = 0;
-  double _getVolume = 0;
   double _setVolumeValue = 0;
 
   @override
   void initState() {
     super.initState();
     VolumeController().showSystemUI = false;
-
     VolumeController().listener((volume) {
-      setState(() => _volumeListenerValue = volume);
+      setState(() => _setVolumeValue = volume);
     });
 
     VolumeController().getVolume().then((volume) => _setVolumeValue = volume);

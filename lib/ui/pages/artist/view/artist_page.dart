@@ -55,12 +55,15 @@ class _ArtistPageState extends State<ArtistPage> {
           fromPage: 'artist_page',
           title: LocaleKeys.popular.tr(),
           item: args.artist.audio,
-          onPress: () {
-            Navigator.of(context).pushNamed(ShowAllPage.id,
-                arguments: ShowAllPageArguments(
-                  //item: args.artist.audio,
-                    title: LocaleKeys.popular.tr(),
-                    fromPage: 'artist_page'));
+          onPress: () async {
+            if(mounted) {
+              Navigator.of(context).pushNamed(ShowAllPage.id,
+                  arguments: ShowAllPageArguments(
+                    //item: args.artist.audio,
+                      title: LocaleKeys.popular.tr(),
+                      fromPage: 'artist_page'));
+            }
+
           },
         ),
         SizedBox(

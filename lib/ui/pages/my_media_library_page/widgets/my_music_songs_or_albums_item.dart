@@ -84,7 +84,6 @@ class _MyMusicSongsOrAlbumItemState extends State<MyMusicSongsOrAlbumItem> {
                       album: list[i].audios, title: list[i].name));
             },
             playlist: list[i],
-            height: 10.h,
           ),
       ],
     );

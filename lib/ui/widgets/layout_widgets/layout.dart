@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:muzzone/ui/widgets/widgets.dart';
 
 class Layout extends StatelessWidget {
   final Widget? child;
@@ -16,11 +15,9 @@ class Layout extends StatelessWidget {
       child: SafeArea(
         child: Scaffold(
             backgroundColor: Colors.white,
-            resizeToAvoidBottomInset: false,
+            resizeToAvoidBottomInset: true,
             extendBody: false,
-            body: MySlidingUpPanel(
-              child: child ?? const SizedBox.shrink(),
-            ),),
+            body: child ?? const SizedBox.shrink()),
       ),
     );
   }

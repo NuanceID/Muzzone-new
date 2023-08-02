@@ -11,4 +11,12 @@ class Globals {
   static final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
   static final kNavigatorKey = GlobalKey<NavigatorState>();
+
+  static final kNestedNavigatorKey = GlobalKey<NavigatorState>();
+
+  static final kMainNestedNavigatorKey = GlobalKey<NavigatorState>();
+
+  static final kSearchNestedNavigatorKey = GlobalKey<NavigatorState>();
+
+  static final kMyMediaNestedNavigatorKey = GlobalKey<NavigatorState>();
 }

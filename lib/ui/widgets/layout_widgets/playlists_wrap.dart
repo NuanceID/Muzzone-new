@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:muzzone/config/config.dart';
 import 'package:muzzone/data/models/playlist.dart';
@@ -52,7 +53,8 @@ class PlaylistsWrap extends StatelessWidget {
       bloc = AlbumsBloc(backendRepository: context.read<BackendRepository>());
     }
     if (item.last.isBackendPlaylist) {
-      bloc = PlaylistsBloc(backendRepository: context.read<BackendRepository>());
+      bloc =
+          PlaylistsBloc(backendRepository: context.read<BackendRepository>());
     }
 
     return MultiBlocProvider(
@@ -159,8 +161,7 @@ class PlaylistsWrap extends StatelessWidget {
 
 class _PlaylistsWrap extends StatefulWidget {
   const _PlaylistsWrap(
-      {
-      required this.item,
+      {required this.item,
       required this.fromPage,
       required this.pagingController,
       required this.bloc});
@@ -231,10 +232,10 @@ class _PlaylistsWrapState extends State<_PlaylistsWrap> {
                         child: Center(
                           child: Text(
                             'По жанру',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 28.sp,
+                            style: GoogleFonts.montserrat(
                               fontWeight: FontWeight.bold,
+                              fontSize: 28.sp,
+                              color: Colors.white,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -260,27 +261,27 @@ class _PlaylistsWrapState extends State<_PlaylistsWrap> {
                         noItemsFoundIndicatorBuilder: (_) => Center(
                             child: Text(
                           LocaleKeys.no_content.tr(),
-                          style: TextStyle(
-                            fontSize: 20.sp,
+                          style: GoogleFonts.montserrat(
                             fontWeight: FontWeight.bold,
+                            fontSize: 20.sp,
                             color: AppColors.primaryColor,
                           ),
                         )),
                         firstPageErrorIndicatorBuilder: (_) => Center(
                             child: Text(
                           LocaleKeys.something_went_wrong.tr(),
-                          style: TextStyle(
-                            fontSize: 20.sp,
+                          style: GoogleFonts.montserrat(
                             fontWeight: FontWeight.bold,
+                            fontSize: 20.sp,
                             color: AppColors.primaryColor,
                           ),
                         )),
                         newPageErrorIndicatorBuilder: (_) => Center(
                             child: Text(
                           LocaleKeys.something_went_wrong.tr(),
-                          style: TextStyle(
-                            fontSize: 20.sp,
+                          style: GoogleFonts.montserrat(
                             fontWeight: FontWeight.bold,
+                            fontSize: 20.sp,
                             color: AppColors.primaryColor,
                           ),
                         )),
@@ -300,10 +301,10 @@ class _PlaylistsWrapState extends State<_PlaylistsWrap> {
                               child: Center(
                                 child: Text(
                                   item.title,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 28.sp,
+                                  style: GoogleFonts.montserrat(
                                     fontWeight: FontWeight.bold,
+                                    fontSize: 20.sp,
+                                    color: AppColors.primaryColor,
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
@@ -321,9 +322,11 @@ class _PlaylistsWrapState extends State<_PlaylistsWrap> {
     if (playlist.title == 'По жанру') {
       await Navigator.of(context).pushNamed(SearchSpecialGenresPage.id);
     } else if (widget.fromPage == 'show_all_page') {
-      await Navigator.of(context).pushNamed(AlbumPage.id,
-          arguments:
-              AlbumPageArguments(item: playlist, album: playlist.audios));
+      if (mounted) {
+        Navigator.of(context).pushNamed(AlbumPage.id,
+            arguments:
+                AlbumPageArguments(item: playlist, album: playlist.audios));
+      }
     } else {
       await Navigator.of(context).pushNamed(SearchChosenGenrePage.id,
           arguments: PageWithPlaylistArgument(playlist: playlist));

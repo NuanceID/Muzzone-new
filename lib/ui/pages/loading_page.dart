@@ -26,8 +26,6 @@ class _LoadingPageState extends State<LoadingPage> {
   }
 
   Future<void> startApp() async {
-    print('LOG_TAG I AM HERE LOADING PAGE');
-
     if (_store.getRegisterDate() == 'firstStart') {
       _store.setRegisterDate(DateTime.now().toString());
     }

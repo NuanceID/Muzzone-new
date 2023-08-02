@@ -13,10 +13,15 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:muzzone/config/config.dart';
 import 'package:muzzone/data/local_data_store/local_data_store.dart';
+import 'package:muzzone/data/models/album.dart';
+import 'package:muzzone/data/models/artist.dart';
+import 'package:muzzone/data/models/media_item_adapter.dart';
+import 'package:muzzone/data/models/playlist.dart';
+import 'package:muzzone/data/models/track.dart';
 import 'package:muzzone/data/models/user.dart';
 import 'package:muzzone/firebase_options.dart';
 import 'package:muzzone/generated/codegen_loader.g.dart';
-import 'package:muzzone/logic/audio/audio_player_handler.dart';
+import 'package:muzzone/logic/audio_handler/audio_player_handler.dart';
 import 'package:muzzone/logic/cubits/internet_cubit/internet_cubit.dart';
 import 'package:muzzone/logic/cubits/theme_cubit.dart';
 import 'package:muzzone/ui/pages/start_page.dart';
@@ -25,13 +30,18 @@ import 'package:path_provider/path_provider.dart';
 
 import 'generated/locale_keys.g.dart';
 
-late AudioPlayerHandler audioHandler;
+late AudioPlayerHandlerImpl audioHandler;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  //latest typeId: 0
+  // latest typeId: 5
+  Hive.registerAdapter(MediaItemAdapter());
+  Hive.registerAdapter(ArtistAdapter());
+  Hive.registerAdapter(AlbumAdapter());
+  Hive.registerAdapter(MyPlaylistAdapter());
+  Hive.registerAdapter(TrackAdapter());
   Hive.registerAdapter(UserAdapter());
 
   var dir = await getApplicationDocumentsDirectory();
@@ -50,12 +60,13 @@ void main() async {
   final key = await secureStorage.read(key: 'userBoxKey');
   final encryptionKeyUint8List = base64Url.decode(key!);
 
-  await Hive.openBox('Recentsearch');
-  await Hive.openBox('RecentlyPlayed');
-  await Hive.openBox('playlists');
+  await Hive.openBox<MyPlaylist>('myPlayLists');
+  await Hive.openBox<Track>('recentTracks');
   await Hive.openBox<User>('userBox',
       encryptionCipher: HiveAesCipher(encryptionKeyUint8List));
+
   await EasyLocalization.ensureInitialized();
+
   await LocalDataStore.init();
 
   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -104,11 +115,11 @@ void main() async {
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
       alert: true, badge: true, sound: true);
 
-  _audioHandler = await AudioService.init(
+  audioHandler = await AudioService.init(
     builder: () => AudioPlayerHandlerImpl(),
     config: const AudioServiceConfig(
       androidNotificationChannelId: 'com.uz.telecom.muzzone',
-      androidNotificationChannelName: 'Muzzone audio',
+      androidNotificationChannelName: 'Muzzone Audio',
       androidNotificationOngoing: true,
     ),
   );
@@ -132,7 +143,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-
   @override
   Widget build(BuildContext context) {
     final LocalDataStore store = LocalDataStore();
@@ -153,8 +163,9 @@ class MyApp extends StatelessWidget {
                 double safeAreaPaddingVertical =
                     mediaQueryData.padding.top + mediaQueryData.padding.bottom;
                 double safeAreaHorizontal =
-                (screenWidth - safeAreaPaddingHorizontal);
-                double safeAreaVertical = (screenHeight - safeAreaPaddingVertical);
+                    (screenWidth - safeAreaPaddingHorizontal);
+                double safeAreaVertical =
+                    (screenHeight - safeAreaPaddingVertical);
 
                 ScreenUtil.init(context,
                     designSize: Size(safeAreaHorizontal, safeAreaVertical));
@@ -172,8 +183,7 @@ class MyApp extends StatelessWidget {
               supportedLocales: context.supportedLocales,
               localizationsDelegates: context.localizationDelegates,
               theme: ThemeGenerator.themeGenerate(store.getTheme()),
-              themeMode:
-              ThemeModeGenerator.themeModeGenerate(store.getTheme()),
+              themeMode: ThemeModeGenerator.themeModeGenerate(store.getTheme()),
               debugShowCheckedModeBanner: false,
               title: constantMuzzone,
               initialRoute: StartPage.id,

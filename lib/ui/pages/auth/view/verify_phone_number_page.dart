@@ -9,7 +9,7 @@ import 'package:muzzone/generated/locale_keys.g.dart';
 import 'package:muzzone/logic/blocs/phone_number_verification/phone_number_verification_bloc.dart';
 import 'package:muzzone/logic/blocs/phone_number_verification/phone_number_verification_event.dart';
 import 'package:muzzone/logic/blocs/phone_number_verification/phone_number_verification_state.dart';
-import 'package:muzzone/ui/pages/main_page/view/main_page.dart';
+import 'package:muzzone/ui/pages/tabbar_view/tabbar_view_page.dart';
 
 import '../../../widgets/common_widgets/pin_input_field.dart';
 import 'authentication_page.dart';
@@ -30,7 +30,7 @@ class VerifyPhoneNumberPage extends StatelessWidget {
               PhoneNumberVerificationStatus.success) {
             if (state.serverMessage == token) {
               Navigator.of(context).pushNamedAndRemoveUntil(
-                  MainPage.id, (Route<dynamic> route) => false);
+                  TabBarViewPage.id, (Route<dynamic> route) => false);
               return;
             }
 
@@ -65,7 +65,6 @@ class _VerifyPhoneNumberPage extends StatefulWidget {
 
 class _VerifyPhoneNumberPageState extends State<_VerifyPhoneNumberPage>
     with WidgetsBindingObserver {
-
   @override
   void initState() {
     super.initState();
@@ -80,23 +79,42 @@ class _VerifyPhoneNumberPageState extends State<_VerifyPhoneNumberPage>
       Navigator.of(context).pushNamedAndRemoveUntil(
           AuthenticationPage.id, (Route<dynamic> route) => false);
       return false;
-    }, child: BlocBuilder<PhoneNumberVerificationBloc,
-        PhoneNumberVerificationState>(builder: (context, state) {
+    }, child:
+        BlocBuilder<PhoneNumberVerificationBloc, PhoneNumberVerificationState>(
+            builder: (context, state) {
       if (state.phoneNumberVerificationStatus ==
           PhoneNumberVerificationStatus.loading) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
-            CircularProgressIndicator(
-              color: AppColors.primaryColor,
-            ),
-          ],
-        );
+        return Container(
+            color: Colors.white,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [
+                CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                ),
+              ],
+            ));
+      }
+
+      if (state.phoneNumberVerificationStatus ==
+          PhoneNumberVerificationStatus.success) {
+        return Container(
+            color: Colors.white,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [
+                CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                ),
+              ],
+            ));
       }
 
       return SingleChildScrollView(
-          child: SizedBox(
+          child: Container(
+              color: Colors.white,
               height: availableHeight,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -287,10 +305,10 @@ class _VerifyPhoneNumberPageState extends State<_VerifyPhoneNumberPage>
                               length: 6,
                               onSubmit: (enteredOtp) {
                                 BlocProvider.of<PhoneNumberVerificationBloc>(
-                                    context)
+                                        context)
                                     .add(PhoneNumberVerified(
-                                    phoneNumber: args.phoneNumber,
-                                    authCode: enteredOtp));
+                                        phoneNumber: args.phoneNumber,
+                                        authCode: enteredOtp));
                               },
                             )),
                         const Flexible(

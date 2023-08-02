@@ -46,10 +46,12 @@ class HeaderTitle extends StatelessWidget {
                     shape: const CircleBorder(),
                     clipBehavior: Clip.hardEdge,
                     child: InkWell(
-                      onTap: onPress ??
-                          () async {
-                            if (needIconBack) Navigator.pop(context);
-                          },
+                      onTap: needIconBack
+                          ? onPress ??
+                              () {
+                                Navigator.pop(context);
+                              }
+                          : null,
                       child: Ink(
                           padding: EdgeInsets.all(availableHeight / 60),
                           child: Transform.rotate(
@@ -76,6 +78,7 @@ class HeaderTitle extends StatelessWidget {
                         color: Colors.black),
                     textAlign: TextAlign.center,
                     maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   )),
             ],
             const Flexible(

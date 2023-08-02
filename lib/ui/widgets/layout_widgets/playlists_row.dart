@@ -40,50 +40,83 @@ class PlaylistsRow extends StatelessWidget {
 
   Widget _buildPopularAndYour(BuildContext context, asset, text, needImage,
       List<dynamic> playlists, int index) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(7.r),
-        onTap: () {
-          if (playlists[index].title == 'По жанру') {
-            Navigator.of(context).pushNamed(SearchSpecialGenresPage.id,
-                arguments: ShowAllPageArguments(
-                    item: playlists,
-                    title: playlists[index].title,
-                    fromPage: fromPage));
-          } else {
-            Navigator.of(context).pushNamed(ShowAllPage.id,
-                arguments: ShowAllPageArguments(
-                    fromPage: fromPage,
-                    item: playlists[index],
-                    id: playlists[index].id,
-                    title: playlists[index].title));
-          }
-        },
-        child: Ink(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(7.r),
-            image: needImage
-                ? DecorationImage(
-              image: text == 'По жанру'
-                  ? AssetImage(asset)
-                  : CachedNetworkImageProvider(asset) as ImageProvider,
-              fit: BoxFit.cover,
-            )
-                : null,
-          ),
-          child: Center(
-            child: Text(
-              text,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(fontSize: 17.sp, fontWeight: FontWeight.w700),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-      )
-    );
+
+    return text == 'По жанру'
+        ? Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(7.r),
+              onTap: () async {
+                if (context.mounted) {
+                  Navigator.of(context).pushNamed(SearchSpecialGenresPage.id,
+                      arguments: ShowAllPageArguments(
+                          item: playlists,
+                          title: playlists[index].title,
+                          fromPage: fromPage));
+                }
+              },
+              child: Ink(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage(asset), fit: BoxFit.cover),
+                  borderRadius: BorderRadius.circular(7.r),
+                ),
+                child: Center(
+                  child: Text(
+                    text,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall!
+                        .copyWith(fontSize: 17.sp, fontWeight: FontWeight.w700),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ))
+        : CachedNetworkImage(
+            imageUrl: asset,
+            progressIndicatorBuilder: (context, url, downloadProgress) {
+              return const Center(
+                child: CircularProgressIndicator(
+                    color: AppColors.primaryColor
+                )
+              );
+            },
+            imageBuilder: (context, imageProvider) {
+              return Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(7.r),
+                    onTap: () async {
+                      if (context.mounted) {
+                        Navigator.of(context).pushNamed(ShowAllPage.id,
+                            arguments: ShowAllPageArguments(
+                                fromPage: fromPage,
+                                item: playlists[index],
+                                id: playlists[index].id,
+                                title: playlists[index].title));
+                      }
+                    },
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: imageProvider, fit: BoxFit.cover),
+                        borderRadius: BorderRadius.circular(7.r),
+                      ),
+                      child: Center(
+                        child: Text(
+                          text,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall!
+                              .copyWith(
+                                  fontSize: 17.sp, fontWeight: FontWeight.w700),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ));
+            },
+          );
   }
 }

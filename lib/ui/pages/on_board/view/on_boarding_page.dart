@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:muzzone/config/config.dart';
 import 'package:muzzone/data/local_data_store/local_data_store.dart';
 import 'package:muzzone/generated/locale_keys.g.dart';
-import 'package:muzzone/logic/blocs/audio/audio_bloc.dart';
 import 'package:muzzone/ui/widgets/widgets.dart';
 
 import '../../../../logic/blocs/on_boarding/on_board_bloc.dart';
@@ -26,7 +25,6 @@ class OnBoardingPage extends StatefulWidget {
 class _OnBoardingPageState extends State<OnBoardingPage> {
 
   late OnBoardBloc onboardBloc;
-  late AudioBloc audioBloc;
 
   final PageController _pageController = PageController(initialPage: 0);
   final LocalDataStore _store = LocalDataStore();
@@ -59,7 +57,6 @@ class _OnBoardingPageState extends State<OnBoardingPage> {
   @override
   Widget build(BuildContext context) {
     onboardBloc = context.read<OnBoardBloc>();
-    audioBloc = context.read<AudioBloc>();
 
     return Scaffold(
       body: SafeArea(

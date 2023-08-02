@@ -22,10 +22,12 @@ class PlaylistsMainPage extends StatelessWidget {
             fromPage: 'main_page',
             title: title,
             item: list,
-            onPress: () {
-              Navigator.of(context).pushNamed(ShowAllPage.id,
-                  arguments: ShowAllPageArguments(
-                      item: list, title: title, fromPage: 'main_page'));
+            onPress: () async {
+              if(context.mounted) {
+                Navigator.of(context).pushNamed(ShowAllPage.id,
+                    arguments: ShowAllPageArguments(
+                        item: list, title: title, fromPage: 'main_page'));
+              }
             },
           ),
         ),

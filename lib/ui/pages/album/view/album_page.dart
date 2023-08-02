@@ -8,14 +8,15 @@ import 'package:muzzone/config/config.dart';
 import 'package:muzzone/data/models/playlist.dart';
 import 'package:muzzone/data/repositories/remote_repositories/backend_repository.dart';
 import 'package:muzzone/generated/locale_keys.g.dart';
-import 'package:muzzone/logic/blocs/audio/audio_bloc.dart';
-import 'package:muzzone/logic/blocs/audio/audio_event.dart';
+import 'package:muzzone/logic/blocs/sliding_up_panel/sliding_up_panel_bloc.dart';
+import 'package:muzzone/logic/blocs/sliding_up_panel/sliding_up_panel_event.dart';
 import 'package:muzzone/logic/blocs/genres/genres_bloc.dart';
 import 'package:muzzone/logic/blocs/genres/genres_event.dart';
 import 'package:muzzone/logic/blocs/genres/genres_state.dart';
 import 'package:muzzone/logic/blocs/playlists/playlists_bloc.dart';
 import 'package:muzzone/logic/blocs/playlists/playlists_event.dart';
 import 'package:muzzone/logic/blocs/playlists/playlists_state.dart';
+import 'package:muzzone/main.dart';
 import 'package:muzzone/ui/widgets/widgets.dart';
 
 class AlbumPage extends StatelessWidget {
@@ -25,8 +26,6 @@ class AlbumPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<AudioBloc>(context).add(ClearPlaylist());
-
     late Bloc bloc;
 
     final PagingController<int, MediaItem> pagingController =
@@ -66,7 +65,7 @@ class AlbumPage extends StatelessWidget {
                   if ((initArgs.item as MyPlaylist).isGenre) ...[
                     BlocListener<GenresBloc, GenresState>(
                         bloc: bloc as GenresBloc,
-                        listener: (context, state) {
+                        listener: (context, state) async {
                           if (state.genreStatus == GenresStatus.success) {
 
                             var playlist = state.genre.tracks
@@ -79,8 +78,7 @@ class AlbumPage extends StatelessWidget {
 
                             )).toList();
 
-                            BlocProvider.of<AudioBloc>(context).add(SetPlaylist(
-                                playlist: playlist));
+                            await audioHandler.addQueueItems(playlist);
 
                             pagingController.appendLastPage(playlist);
 
@@ -100,7 +98,7 @@ class AlbumPage extends StatelessWidget {
                   if ((initArgs.item as MyPlaylist).isBackendPlaylist) ...[
                     BlocListener<PlaylistsBloc, PlaylistsState>(
                         bloc: bloc as PlaylistsBloc,
-                        listener: (context, state) {
+                        listener: (context, state) async {
                           if (state.playlistStatus == PlaylistsStatus.success) {
 
                             var playlist = state.backendPlaylist.tracks
@@ -113,8 +111,7 @@ class AlbumPage extends StatelessWidget {
 
                             )).toList();
 
-                            BlocProvider.of<AudioBloc>(context)
-                                .add(SetPlaylist(playlist: playlist));
+                            await audioHandler.addQueueItems(playlist);
 
                             pagingController.appendLastPage(playlist);
 
@@ -221,9 +218,11 @@ class _AlbumPageState extends State<_AlbumPage> {
                                 )),
                             itemBuilder: (context, item, index) => AudioRow(
                                   audio: item,
-                                  onPress: () {
-                                    BlocProvider.of<AudioBloc>(context).add(OpenMiniPlayer());
-                                    context.read<AudioBloc>().add(Play(audioPath: item.id));
+                                  onPress: () async {
+                                    if(mounted) {
+                                      BlocProvider.of<SlidingUpPanelBloc>(context).add(OpenMiniPlayer());
+                                    }
+                                    await audioHandler.playFromMediaId(item.id);
                                   },
                                 )),
                       )
@@ -366,9 +365,11 @@ class _AlbumPageState extends State<_AlbumPage> {
                     itemCount: args.album!.length,
                     itemBuilder: (context, index) => AudioRow(
                       audio: args.album![index],
-                      onPress: () {
-                        BlocProvider.of<AudioBloc>(context).add(OpenMiniPlayer());
-                        context.read<AudioBloc>().add(Play(audioPath: args.album![index].id));
+                      onPress: () async {
+                        if(mounted) {
+                          BlocProvider.of<SlidingUpPanelBloc>(context).add(OpenMiniPlayer());
+                        }
+                        await audioHandler.playFromMediaId(args.album![index].id);
                       },
                     ),
                   ),

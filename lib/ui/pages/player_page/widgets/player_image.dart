@@ -21,8 +21,8 @@ class PlayerImage extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20.r),
         child: Image.network(
-          myAudio.artUri?.path ?? '',
-          fit: BoxFit.cover,
+          myAudio.artUri.toString() ?? '',
+          fit: BoxFit.fitHeight,
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
             return const Center(

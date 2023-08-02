@@ -34,12 +34,13 @@ class TitleWithButtonShowAll extends StatelessWidget {
         Flexible(
             child: Row(
           children: [
-            const Flexible(
+            Flexible(
+              flex: isPlaylists == false ? 4 : 5,
               fit: FlexFit.tight,
-              child: SizedBox.shrink(),
+              child: const SizedBox.shrink(),
             ),
             Flexible(
-              flex: title == LocaleKeys.language_affiliation.tr() ? 12 : 9,
+              flex: title == LocaleKeys.language_affiliation.tr() ? 48 : 36,
               fit: FlexFit.tight,
               child: AutoSizeText(
                 title,
@@ -56,9 +57,9 @@ class TitleWithButtonShowAll extends StatelessWidget {
             ),
             if (title == LocaleKeys.language_affiliation.tr())
               const Flexible(child: SizedBox.shrink())
-            else if (isPlaylists != null && isPlaylists == false)
+            else if (isPlaylists == false)
               Flexible(
-                flex: 4,
+                flex: 16,
                 fit: FlexFit.tight,
                 child: ButtonShowAll(
                   fromPage: fromPage,
@@ -69,12 +70,13 @@ class TitleWithButtonShowAll extends StatelessWidget {
               )
             else
               Flexible(
-                  flex: 4,
+                  flex: 36,
                   fit: FlexFit.tight,
                   child: ButtonCreateNewPlaylist(
                     onPress: createNewPlaylist!,
                   )),
             const Flexible(
+              flex: 4,
               fit: FlexFit.tight,
               child: SizedBox.shrink(),
             ),

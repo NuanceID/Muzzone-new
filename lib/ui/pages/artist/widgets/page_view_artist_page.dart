@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:muzzone/logic/blocs/audio/audio_event.dart';
+import 'package:muzzone/logic/blocs/sliding_up_panel/sliding_up_panel_bloc.dart';
+import 'package:muzzone/logic/blocs/sliding_up_panel/sliding_up_panel_event.dart';
+import 'package:muzzone/main.dart';
 import 'package:muzzone/ui/widgets/layout_widgets/audio_row.dart';
 
 import '../../../../config/routes/arguments/album_page_arguments.dart';
-import '../../../widgets/layout_widgets/playlist_row.dart';
-import '../../../../logic/blocs/audio/audio_bloc.dart';
+import '../../my_media_page/widgets/playlist_row.dart';
 import '../../search/widgets/search_chosen_genre_page/search_chosen_genre_page.dart';
 
 class PageViewArtistPage extends StatelessWidget {
@@ -68,8 +69,8 @@ class ColumnMusicAndAlbumsArtistPage extends StatelessWidget {
               paddingLeft: 2.w,
               audio: args[i],
               onPress: () {
-                BlocProvider.of<AudioBloc>(context).add(OpenMiniPlayer());
-                BlocProvider.of<AudioBloc>(context).add(Play(audioPath: args[i].path));
+                BlocProvider.of<SlidingUpPanelBloc>(context).add(OpenMiniPlayer());
+                audioHandler.playFromMediaId(args[i].id);
               },
             )
           else
@@ -85,7 +86,6 @@ class ColumnMusicAndAlbumsArtistPage extends StatelessWidget {
               },
               playlist: args[i],
               paddingLeft: 2.w,
-              height: 7.h,
             ),
       ],
     );

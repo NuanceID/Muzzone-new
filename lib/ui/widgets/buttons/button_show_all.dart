@@ -22,39 +22,38 @@ class ButtonShowAll extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    return InkWell(
-      borderRadius: BorderRadius.circular(5.r),
-      onTap: onPress,
-      child: Ink(
-        decoration: BoxDecoration(
-          color: AppColors.primaryColor,
+    return Material(
+        color: Colors.transparent,
+        child: InkWell(
           borderRadius: BorderRadius.circular(5.r),
-        ),
-        child: Row(
-          children: [
-            const Flexible(fit: FlexFit.tight, child: SizedBox.shrink()),
-            Flexible(
-                flex: 12,
-                fit: FlexFit.tight,
-                child: SizedBox(
-                  height: availableHeight/22,
-                  child: Center(
-                    child: AutoSizeText(
-                      LocaleKeys.show_all.tr(),
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall!
-                          .copyWith(fontSize: 14.sp),
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                    )
-                  )
-                )),
-            const Flexible(fit: FlexFit.tight, child: SizedBox.shrink())
-          ],
-        ),
-      ),
-    );
+          onTap: onPress,
+          child: Ink(
+            decoration: BoxDecoration(
+              color: AppColors.primaryColor,
+              borderRadius: BorderRadius.circular(5.r),
+            ),
+            child: Row(
+              children: [
+                const Flexible(fit: FlexFit.tight, child: SizedBox.shrink()),
+                Flexible(
+                    flex: 12,
+                    fit: FlexFit.tight,
+                    child: SizedBox(
+                        height: availableHeight / 22,
+                        child: Center(
+                            child: AutoSizeText(
+                          LocaleKeys.show_all.tr(),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall!
+                              .copyWith(fontSize: 14.sp),
+                          maxLines: 1,
+                          textAlign: TextAlign.center,
+                        )))),
+                const Flexible(fit: FlexFit.tight, child: SizedBox.shrink())
+              ],
+            ),
+          ),
+        ));
   }
 }

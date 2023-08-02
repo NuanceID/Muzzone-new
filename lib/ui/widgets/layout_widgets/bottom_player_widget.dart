@@ -1,15 +1,16 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:muzzone/logic/blocs/audio/audio_event.dart';
-import 'package:muzzone/ui/pages/player_page/widgets/player_bottom_position_seek.dart';
+import 'package:muzzone/logic/blocs/sliding_up_panel/sliding_up_panel_bloc.dart';
+import 'package:muzzone/logic/blocs/sliding_up_panel/sliding_up_panel_event.dart';
+import 'package:muzzone/main.dart';
+import 'package:muzzone/ui/widgets/layout_widgets/bottom_player_buttons.dart';
+import 'package:muzzone/ui/widgets/layout_widgets/bottom_player_position_seek_widget.dart';
 
 import '../../../config/config.dart';
-import '../../controllers/controllers.dart';
-import '../../../logic/blocs/audio/audio_bloc.dart';
 import '../widgets.dart';
 
 class BottomPlayerWidget extends StatelessWidget {
@@ -19,12 +20,16 @@ class BottomPlayerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<IcyMetadata?>(
-        stream: BlocProvider.of<AudioBloc>(context).state.justAudioPlayer.icyMetadataStream,
+    return StreamBuilder<MediaItem?>(
+        stream: audioHandler.mediaItem,
         builder: (context, snapshot) {
+          final mediaItem = snapshot.data;
+          if (mediaItem == null) return const SizedBox.shrink();
+
           return GestureDetector(
             onTap: () {
-              BlocProvider.of<AudioBloc>(context).add(OpenSlidingPanel());
+              BlocProvider.of<SlidingUpPanelBloc>(context)
+                  .add(OpenSlidingPanel());
             },
             child: Container(
               height: availableHeight / 8,
@@ -43,8 +48,7 @@ class BottomPlayerWidget extends StatelessWidget {
                       child: Row(
                         children: [
                           const Flexible(
-                              fit: FlexFit.tight,
-                              child: SizedBox.shrink()),
+                              fit: FlexFit.tight, child: SizedBox.shrink()),
                           Flexible(
                             flex: 30,
                             fit: FlexFit.tight,
@@ -54,15 +58,15 @@ class BottomPlayerWidget extends StatelessWidget {
                                   flex: 45,
                                   fit: FlexFit.tight,
                                   child: ClipRRect(
-                                    borderRadius:
-                                    BorderRadius.circular(3.r),
+                                    borderRadius: BorderRadius.circular(3.r),
                                     child: CachedNetworkImage(
-                                      imageUrl: ,
+                                      imageUrl:
+                                          mediaItem.artUri.toString() ?? '',
                                       width: availableHeight / 17,
                                       height: availableHeight / 17,
                                       progressIndicatorBuilder:
                                           (context, url, l) =>
-                                      const LoadingImage(),
+                                              const LoadingImage(),
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -76,7 +80,8 @@ class BottomPlayerWidget extends StatelessWidget {
                                   fit: FlexFit.tight,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Flexible(
                                           fit: FlexFit.tight,
@@ -84,12 +89,11 @@ class BottomPlayerWidget extends StatelessWidget {
                                       Flexible(
                                         flex: 10,
                                         child: Text(
-                                          playing.audio.audio.metas.title ?? '',
+                                          mediaItem.title ?? '',
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                           style: GoogleFonts.montserrat(
-                                              fontWeight:
-                                              FontWeight.w600,
+                                              fontWeight: FontWeight.w600,
                                               fontSize: 13.sp,
                                               color: Colors.black),
                                           textAlign: TextAlign.start,
@@ -101,7 +105,7 @@ class BottomPlayerWidget extends StatelessWidget {
                                       Flexible(
                                           flex: 10,
                                           child: Text(
-                                            playing.audio.audio.metas.artist ?? '',
+                                            mediaItem.artist ?? '',
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                             style: GoogleFonts.montserrat(
@@ -120,76 +124,34 @@ class BottomPlayerWidget extends StatelessWidget {
                                     flex: 2,
                                     fit: FlexFit.tight,
                                     child: SizedBox.shrink()),
-                                Flexible(
+                                const Flexible(
                                   flex: 120,
                                   fit: FlexFit.tight,
-                                  child: PlayerBuilder.isPlaying(
-                                    player: BlocProvider.of<AudioBloc>(context).state.justAudioPlayer,
-                                    builder: (context, isPlaying) {
-                                      return BottomPlayingController(
-                                        addToFavourite: () {
-                                          /*BlocProvider.of<FavouriteAudiosBloc>(context).add(
-                                          AddOrRemoveEvent(
-                                              int.parse(BlocProvider.of<AudioBloc>(context).state.currentAudio?.metas.id ?? '',)));*/
-                                        },
-                                        isPlaylist: true,
-                                        onPlay: () {
-                                          BlocProvider.of<AudioBloc>(context).state.justAudioPlayer.playOrPause();
-                                        },
-                                        isPlaying: isPlaying,
-                                      );
-                                    },
-                                  ),
+                                  child: BottomPlayerButtons(),
                                 ),
                               ],
                             ),
                           ),
                           const Flexible(
-                              fit: FlexFit.tight,
-                              child: SizedBox.shrink()),
+                              fit: FlexFit.tight, child: SizedBox.shrink()),
                         ],
                       )),
                   Flexible(
                     fit: FlexFit.tight,
                     child: Row(
-                      children: [
-                        const Flexible(
-                            fit: FlexFit.tight,
-                            child: SizedBox.shrink()),
+                      children: const [
+                        Flexible(fit: FlexFit.tight, child: SizedBox.shrink()),
                         Flexible(
                             flex: 30,
                             fit: FlexFit.tight,
-                            child:
-                            _buildPlayerBottomPositionSeek(context)),
-                        const Flexible(
-                            fit: FlexFit.tight,
-                            child: SizedBox.shrink()),
+                            child: BottomPlayerPositionSeekWidget()),
+                        Flexible(fit: FlexFit.tight, child: SizedBox.shrink()),
                       ],
                     ),
                   )
                 ],
               ),
             ),
-          );
-        });
-
-
-
-  }
-
-  PlayerBuilder _buildPlayerBottomPositionSeek(BuildContext context) {
-    return BlocProvider.of<AudioBloc>(context).state.justAudioPlayer.builderRealtimePlayingInfos(
-        builder: (context, RealtimePlayingInfos? infos) {
-          if (infos == null) {
-            return Container();
-          }
-
-          return PlayerBottomPositionSeek(
-            currentPosition: infos.currentPosition,
-            duration: infos.duration,
-            seekTo: (to) {
-              BlocProvider.of<AudioBloc>(context).state.justAudioPlayer.seek(to);
-            },
           );
         });
   }

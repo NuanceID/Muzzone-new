@@ -2,6 +2,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:muzzone/config/constants/constants.dart';
 import 'package:muzzone/ui/widgets/buttons/three_dots_button.dart';
 
@@ -38,10 +39,9 @@ class AudioListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return SizedBox(
       width: double.infinity,
-      height: availableHeight/12 + availableHeight/80,
+      height: availableHeight / 12 + availableHeight / 80,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -86,7 +86,7 @@ class AudioListTile extends StatelessWidget {
                               flex: 4,
                               fit: FlexFit.tight,
                               child: ThreeDotsButton(
-                                fromPage: 'main_page',
+                                fromPage: 'audio_row',
                                 audio: audio,
                               )),
                         ],
@@ -95,8 +95,9 @@ class AudioListTile extends StatelessWidget {
                   ),
                 ],
               )),
-          Flexible(child: SizedBox(
-            height: availableHeight/80,
+          Flexible(
+              child: SizedBox(
+            height: availableHeight / 80,
           )),
         ],
       ),
@@ -111,14 +112,13 @@ class _AudioRowImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return SizedBox(
       height: availableHeight / 14,
       width: availableHeight / 14,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
         child: CachedNetworkImage(
-            imageUrl: audio.artUri?.path ?? '',
+            imageUrl: audio.artUri.toString() ?? '',
             fit: BoxFit.cover,
             progressIndicatorBuilder: (context, url, loadingProgress) {
               return const LoadingImage();
@@ -135,7 +135,6 @@ class _AudioRowText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,7 +142,10 @@ class _AudioRowText extends StatelessWidget {
         Flexible(
           child: Text(
             audio.title,
-            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+            style: GoogleFonts.montserrat(
+                fontWeight: FontWeight.w600,
+                fontSize: 16.sp,
+                color: AppColors.primaryColor),
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
             textAlign: TextAlign.start,
@@ -157,10 +159,10 @@ class _AudioRowText extends StatelessWidget {
         Flexible(
           child: Text(
             audio.artist ?? '',
-            style: TextStyle(
-                color: AppColors.greyColor,
+            style: GoogleFonts.montserrat(
+                fontWeight: FontWeight.w500,
                 fontSize: 15.sp,
-                fontWeight: FontWeight.w500),
+                color: AppColors.greyColor),
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
             textAlign: TextAlign.start,

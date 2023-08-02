@@ -125,19 +125,36 @@ class _AuthenticationPageState extends State<_AuthenticationPage> {
     return BlocBuilder<AuthorizationBloc, AuthorizationState>(
         builder: (context, state) {
       if (state.authorizationStatus == AuthorizationStatus.loading) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
-            CircularProgressIndicator(
-              color: AppColors.primaryColor,
-            ),
-          ],
-        );
+        return Container(
+            color: Colors.white,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [
+                CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                ),
+              ],
+            ));
+      }
+
+      if (state.authorizationStatus == AuthorizationStatus.success) {
+        return Container(
+            color: Colors.white,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: const [
+                CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                ),
+              ],
+            ));
       }
 
       return SingleChildScrollView(
-          child: SizedBox(
+          child: Container(
+        color: Colors.white,
         height: availableHeight,
         child: Column(
           children: [
@@ -219,7 +236,10 @@ class _AuthenticationPageState extends State<_AuthenticationPage> {
                           prefix: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Flexible(flex: 1, fit: FlexFit.tight, child: SizedBox.shrink()),
+                              const Flexible(
+                                  flex: 1,
+                                  fit: FlexFit.tight,
+                                  child: SizedBox.shrink()),
                               Flexible(
                                 flex: 50,
                                 fit: FlexFit.tight,
@@ -229,7 +249,10 @@ class _AuthenticationPageState extends State<_AuthenticationPage> {
                                   height: availableHeight / 16,
                                 ),
                               ),
-                              const Flexible(flex: 20, fit: FlexFit.tight, child: SizedBox.shrink()),
+                              const Flexible(
+                                  flex: 20,
+                                  fit: FlexFit.tight,
+                                  child: SizedBox.shrink()),
                               Flexible(
                                 flex: 200,
                                 child: Text(
@@ -241,7 +264,10 @@ class _AuthenticationPageState extends State<_AuthenticationPage> {
                                   textAlign: TextAlign.start,
                                 ),
                               ),
-                              const Flexible(flex: 5, fit: FlexFit.tight, child: SizedBox.shrink()),
+                              const Flexible(
+                                  flex: 5,
+                                  fit: FlexFit.tight,
+                                  child: SizedBox.shrink()),
                             ],
                           ),
                           errorBorder: OutlineInputBorder(

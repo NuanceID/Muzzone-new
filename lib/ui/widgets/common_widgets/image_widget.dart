@@ -7,10 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:muzzone/config/config.dart';
-import 'package:muzzone/logic/blocs/audio/audio_state.dart';
 
 import '../../../generated/locale_keys.g.dart';
-import '../../../logic/blocs/audio/audio_bloc.dart';
 import '../../pages/profile/setting_profile/edit_profile_page/widgets/edition_zone/edit_photo/bloc/edit_photo_bloc.dart';
 
 class ImageWidget extends StatelessWidget {
@@ -115,7 +113,46 @@ class ImageWidget extends StatelessWidget {
     if (Platform.isIOS) {
       return showCupertinoModalPopup<ImageSource>(
           context: context,
-          builder: (context) => BlocBuilder<AudioBloc, AudioState>(
+          builder: (context) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: 1.h + Space.bottomBarHeight * 2,
+              ),
+              child: CupertinoActionSheet(
+                actions: [
+                  CupertinoActionSheetAction(
+                    child: Text(
+                      LocaleKeys.camera.tr(),
+                      style: TextStyle(
+                        color: Theme.of(context).splashColor,
+                      ),
+                    ),
+                    onPressed: () =>
+                        Navigator.of(context).pop(ImageSource.camera),
+                  ),
+                  CupertinoActionSheetAction(
+                    child: Text(
+                      LocaleKeys.gallery.tr(),
+                      style: TextStyle(
+                        color: Theme.of(context).splashColor,
+                      ),
+                    ),
+                    onPressed: () =>
+                        Navigator.of(context).pop(ImageSource.gallery),
+                  ),
+                  CupertinoActionSheetAction(
+                    child: Text(
+                      LocaleKeys.cancel.tr(),
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+            );
+          });
+
+              /*BlocBuilder<AudioBloc, AudioState>(
                 builder: (context, state) {
                   return Padding(
                     padding: EdgeInsets.only(
@@ -154,7 +191,7 @@ class ImageWidget extends StatelessWidget {
                     ),
                   );
                 },
-              ));
+              ));*/
     } else {
       return showModalBottomSheet(
           backgroundColor: Colors.white.withOpacity(0),
@@ -216,11 +253,11 @@ class ImageWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  BlocBuilder<AudioBloc, AudioState>(
+                  /*BlocBuilder<AudioBloc, AudioState>(
                     builder: (context, state) {
                       return SizedBox(height: 1.h + Space.bottomBarHeight * 2);
                     },
-                  ),
+                  ),*/
                 ],
               ));
     }

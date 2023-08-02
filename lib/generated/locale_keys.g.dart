@@ -1,6 +1,6 @@
 // DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
 
-abstract class  LocaleKeys {
+abstract class LocaleKeys {
   static const button_start = 'button_start';
   static const button_next = 'button_next';
   static const choose_language = 'choose_language';
@@ -95,4 +95,18 @@ abstract class  LocaleKeys {
   static const invalid = 'invalid';
   static const no_content = 'no_content';
   static const repeat_tap_to_exit = 'repeat_tap_to_exit';
+  static const recent_tracks = 'recent_tracks';
+  static const no_recent_tracks = 'no_recent_tracks';
+  static const no_my_playlists = 'no_my_playlists';
+  static const playlist_limit_exceeded = 'playlist_limit_exceeded';
+  static const ok = 'ok';
+  static const delete_playlist = 'delete_playlist';
+  static const update_name_playlist = 'update_name_playlist';
+  static const delete_playlist_title = 'delete_playlist_title';
+  static const are_you_sure_delete_playlist = 'are_you_sure_delete_playlist';
+  static const yes = 'yes';
+  static const update_name_playlist_title = 'update_name_playlist_title';
+  static const enter_name_playlist = 'enter_name_playlist';
+  static const playlist_name = 'playlist_name';
+  static const change = 'change';
 }
